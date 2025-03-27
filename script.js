@@ -35,48 +35,87 @@ document.addEventListener('DOMContentLoaded', () => {
             // *** UPDATED TASK STRUCTURE with 'methods' array ***
             { id: 'T001', name: 'Surface Inspection', isSelected: true,
               methods: [{ name: 'Visual/Tactile', rate: 550, isSelected: true }], // Rate moved here
-              skillLevel: 'Medium', materialsRequired: 'Bright flashlight, Moisture meter', factorsAffecting: 'Surface condition, Lighting conditions', description: 'Thoroughly examine...' },
+              skillLevel: 'Medium', materialsRequired: 'Bright flashlight, Moisture meter', factorsAffecting: 'Surface condition, Lighting conditions', 
+              description: 'Thoroughly examine all bead-board surfaces for defects, damage, or irregularities that may affect the finish. Check for moisture issues, loose boards, or areas needing repair before proceeding with painting process.' },
+            
             { id: 'T002', name: 'Surface Cleaning', isSelected: true,
               methods: [{ name: 'Vacuum/Wipe', rate: 275, isSelected: true }],
-              skillLevel: 'Low', materialsRequired: 'Tack cloth, Vacuum w/ brush, TSP substitute', factorsAffecting: 'Dust level, Site cleanliness', description: 'Remove all dust...' },
+              skillLevel: 'Low', materialsRequired: 'Tack cloth, Vacuum w/ brush, TSP substitute', factorsAffecting: 'Dust level, Site cleanliness', 
+              description: 'Remove all dust, dirt, and debris from bead-board surfaces using vacuum with brush attachment followed by tack cloth. For surfaces with construction residue, clean with diluted TSP substitute and allow to dry completely.' },
+            
             { id: 'T003', name: 'Nail Hole Filling/Spackling', isSelected: true,
               methods: [{ name: 'Knife/Finger', rate: 200, isSelected: true }],
-              skillLevel: 'Medium', materialsRequired: 'Lightweight spackling, Putty knife', factorsAffecting: 'Number of holes, Depth', description: 'Fill all nail holes...' },
+              skillLevel: 'Medium', materialsRequired: 'Lightweight spackling, Putty knife', factorsAffecting: 'Number of holes, Depth', 
+              description: 'Fill all nail holes, dents, and small imperfections with lightweight spackling compound. Apply with putty knife or finger for small holes, ensuring material is slightly proud of surface to allow for shrinkage and sanding.' },
+            
             { id: 'T004', name: 'Caulking Seams & Transitions', isSelected: true,
               methods: [{ name: 'Gun/Tool', rate: 175, isSelected: true }],
-              skillLevel: 'Medium', materialsRequired: 'Paintable acrylic caulk, Caulk gun', factorsAffecting: 'Number of seams, Gap width', description: 'Apply paintable acrylic caulk...' },
+              skillLevel: 'Medium', materialsRequired: 'Paintable acrylic caulk, Caulk gun', factorsAffecting: 'Number of seams, Gap width', 
+              description: 'Apply paintable acrylic caulk to all seams, joints, and transitions between bead-board panels and adjacent surfaces. Tool with wet finger or appropriate tool to create smooth, concave bead. Remove excess and allow to dry completely.' },
+            
             { id: 'T005', name: 'Sanding Preparation', isSelected: true,
               methods: [{ name: 'Hand/Sponge', rate: 225, isSelected: true }],
-              skillLevel: 'Medium', materialsRequired: '220-grit sandpaper, Sanding sponge', factorsAffecting: 'Primer condition, Detail complexity', description: 'Lightly sand entire surface...' },
+              skillLevel: 'Medium', materialsRequired: '220-grit sandpaper, Sanding sponge', factorsAffecting: 'Primer condition, Detail complexity', 
+              description: 'Lightly sand entire surface with 220-grit sandpaper or sanding sponge to ensure smooth finish and proper paint adhesion. Pay special attention to filled nail holes, caulked areas, and any rough spots. Remove all sanding dust before proceeding.' },
+            
             { id: 'T006', name: 'Spot Priming (as needed)', isSelected: true,
               methods: [{ name: 'Brush/Mini-Roll', rate: 250, isSelected: true }],
-              skillLevel: 'Medium', materialsRequired: 'Acrylic primer, Brush, Mini-roller', factorsAffecting: 'Area requiring priming, Primer quality', description: 'Apply primer to spackled areas...' },
+              skillLevel: 'Medium', materialsRequired: 'Acrylic primer, Brush, Mini-roller', factorsAffecting: 'Area requiring priming, Primer quality', 
+              description: 'Apply primer to spackled areas, bare wood, or any spots where factory primer is damaged or missing. Feather edges to blend with existing primed surfaces. Allow primer to dry completely according to manufacturer specifications.' },
+            
             // Example with multiple methods defined initially
             { id: 'T007', name: 'First Coat Application', isSelected: true,
               methods: [
                   { name: 'Brush/Roll', rate: 200, isSelected: true }, // Default selected
                   { name: 'Spray+Backbrush', rate: 250, isSelected: false }
               ],
-              skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', factorsAffecting: 'Groove complexity, Paint viscosity', description: 'Apply first coat...' },
+              skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', factorsAffecting: 'Groove complexity, Paint viscosity', 
+              description: 'Apply first coat of premium latex paint to all bead-board surfaces. For brush/roll method, use appropriate size brush for grooves and mini-roller for flat areas. For spray method, apply with HVLP sprayer followed by backbrushing to ensure paint penetrates all grooves and details.' },
+            
             { id: 'T008', name: 'Light Sanding Between Coats', isSelected: true,
               methods: [{ name: 'Hand/Sponge', rate: 325, isSelected: true }],
-              skillLevel: 'Medium', materialsRequired: '320-grit sandpaper, Sanding sponge', factorsAffecting: 'First coat smoothness, Env. conditions', description: 'Once first coat is dry...' },
+              skillLevel: 'Medium', materialsRequired: '320-grit sandpaper, Sanding sponge', factorsAffecting: 'First coat smoothness, Env. conditions', 
+              description: 'Once first coat is dry, lightly sand all surfaces with 320-grit sandpaper or fine sanding sponge to remove any raised grain, dust nibs, or imperfections. Use light pressure to avoid cutting through paint film. Remove all sanding dust before applying final coat.' },
+            
             { id: 'T009', name: 'Final Coat Application', isSelected: true,
               methods: [
                   { name: 'Brush/Roll', rate: 225, isSelected: true },
                   { name: 'Spray+Backbrush', rate: 275, isSelected: false }
               ],
-              skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', factorsAffecting: 'Groove complexity, Coverage needs', description: 'Apply final coat...' },
+              skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', factorsAffecting: 'Groove complexity, Coverage needs', 
+              description: 'Apply final coat of premium latex paint using same method as first coat. Ensure even coverage with special attention to edges, grooves, and transitions. Apply with consistent technique to maintain uniform sheen and appearance across all surfaces.' },
+            
             { id: 'T010', name: 'Post-Finish Inspection', isSelected: true,
               methods: [{ name: 'Visual', rate: 475, isSelected: true }],
-              skillLevel: 'High', materialsRequired: 'Bright movable lighting', factorsAffecting: 'Lighting conditions, Quality standards', description: 'After final coat dried...' },
+              skillLevel: 'High', materialsRequired: 'Bright movable lighting', factorsAffecting: 'Lighting conditions, Quality standards', 
+              description: 'After final coat has dried, inspect all painted surfaces using bright, movable lighting at various angles to identify any defects, missed areas, or inconsistencies in finish. Mark any areas requiring touch-up with removable tape or other non-marring method.' },
+            
             { id: 'T011', name: 'Final Touch-Up', isSelected: true,
               methods: [{ name: 'Artist Brush/Feather', rate: 350, isSelected: true }],
-              skillLevel: 'High', materialsRequired: 'Touch-up kit, Artist brushes', factorsAffecting: 'Number of defects, Visibility', description: 'Address identified defects...' },
+              skillLevel: 'High', materialsRequired: 'Touch-up kit, Artist brushes', factorsAffecting: 'Number of defects, Visibility', 
+              description: 'Address identified defects with careful touch-up using appropriate size artist brushes. Feather edges of touch-up areas to blend with surrounding finish. For larger areas requiring correction, consider re-coating the entire section to maintain consistent appearance.' },
+            
             // Optional Tasks
-             { id: 'OPT01', name: 'Heavy Duty Cleaning', isSelected: false, methods: [{ name: 'Scrub/Rinse', rate: 175, isSelected: true }], skillLevel: 'Low', materialsRequired: 'Degreaser, Brushes, Water', factorsAffecting: 'Level of contamination', description: 'Extensive cleaning...' },
-             { id: 'OPT02', name: 'Full Surface Priming', isSelected: false, methods: [{ name: 'Brush/Roll', rate: 175, isSelected: true }], skillLevel: 'Medium', materialsRequired: 'Primer, Brushes, Rollers', factorsAffecting: 'Surface porosity, Stains', description: 'Apply primer to entire surface.' },
-             { id: 'OPT03', name: 'Extensive Masking', isSelected: false, methods: [{ name: 'Manual Tape/Sheet', rate: 125, isSelected: true }], skillLevel: 'Medium', materialsRequired: 'Tape, Plastic/Paper sheeting', factorsAffecting: 'Complexity of areas', description: 'Detailed masking...' },
+             { id: 'OPT01', name: 'Heavy Duty Cleaning', isSelected: false, 
+               methods: [{ name: 'Scrub/Rinse', rate: 175, isSelected: true }], 
+               skillLevel: 'Low', 
+               materialsRequired: 'Degreaser, Brushes, Water', 
+               factorsAffecting: 'Level of contamination', 
+               description: 'Extensive cleaning for surfaces with heavy contamination, grease, or construction residue. Apply appropriate degreaser or cleaner, scrub with brush, and rinse thoroughly. Allow to dry completely before proceeding with any other preparation steps.' },
+             
+             { id: 'OPT02', name: 'Full Surface Priming', isSelected: false, 
+               methods: [{ name: 'Brush/Roll', rate: 175, isSelected: true }], 
+               skillLevel: 'Medium', 
+               materialsRequired: 'Primer, Brushes, Rollers', 
+               factorsAffecting: 'Surface porosity, Stains', 
+               description: 'Apply primer to entire surface when factory primer is inadequate, damaged, or when dealing with stains or tannin bleed. Use high-quality primer appropriate for the substrate and topcoat. Allow to dry completely according to manufacturer specifications before proceeding.' },
+             
+             { id: 'OPT03', name: 'Extensive Masking', isSelected: false, 
+               methods: [{ name: 'Manual Tape/Sheet', rate: 125, isSelected: true }], 
+               skillLevel: 'Medium', 
+               materialsRequired: 'Tape, Plastic/Paper sheeting', 
+               factorsAffecting: 'Complexity of areas', 
+               description: 'Detailed masking of adjacent surfaces, fixtures, hardware, or areas not to be painted. Use appropriate tape for different surfaces to prevent damage. Apply plastic or paper sheeting for broader protection. Ensure all edges are sealed to prevent paint bleed-through.' },
         ],
         taskFactorSettings: {}
     };
