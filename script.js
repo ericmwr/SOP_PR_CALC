@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sopName: "New Construction Interior - Wainscot - Bead-Board Painting",
         sopDescription: "This specification covers the painting...",
         globalFactors: [
-             { id: 'F001', name: 'Surface Condition', multiplierRange: '0.8-1.2' },
-             { id: 'F002', name: 'Access Difficulty', multiplierRange: '0.7-1.0' },
-             { id: 'F003', name: 'Detail Complexity', multiplierRange: '0.75-1.1' },
-             { id: 'F004', name: 'Environmental Conditions', multiplierRange: '0.9-1.1' },
-             { id: 'F005', name: 'Quality Standard', multiplierRange: '0.85-1.3' }
+             { id: 'F001', name: 'Surface Condition', multiplierRange: '0.8-1.2', description: 'The condition of the surface being painted, including smoothness, existing damage, and preparation needs.' },
+             { id: 'F002', name: 'Access Difficulty', multiplierRange: '0.7-1.0', description: 'How difficult it is to reach the work area. Includes height, confined spaces, and obstacles.' },
+             { id: 'F003', name: 'Detail Complexity', multiplierRange: '0.75-1.1', description: 'The level of detail and intricacy in the work area, such as trim, moldings, and decorative elements.' },
+             { id: 'F004', name: 'Environmental Conditions', multiplierRange: '0.9-1.1', description: 'Temperature, humidity, ventilation, and other environmental factors affecting application.' },
+             { id: 'F005', name: 'Quality Standard', multiplierRange: '0.85-1.3', description: 'The required level of finish quality, from basic to premium finishes.' }
         ],
         tasks: [
             // *** UPDATED TASK STRUCTURE with 'methods' array ***
@@ -191,6 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
             itemDiv.classList.add('global-factor-item');
             itemDiv.dataset.factorId = factor.id;
 
+            // Create main inputs container (name, range, delete button)
+            const mainInputsDiv = document.createElement('div');
+            mainInputsDiv.classList.add('factor-main-inputs');
+
             const nameInput = document.createElement('input');
             nameInput.type = 'text'; nameInput.value = factor.name; nameInput.placeholder = 'Factor Name';
             nameInput.addEventListener('change', (e) => handleGlobalFactorUpdate(factor.id, 'name', e.target.value));
@@ -203,7 +207,24 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.textContent = 'Delete'; deleteBtn.classList.add('delete-factor-btn');
             deleteBtn.addEventListener('click', () => handleDeleteFactor(factor.id));
 
-            itemDiv.appendChild(nameInput); itemDiv.appendChild(rangeInput); itemDiv.appendChild(deleteBtn);
+            mainInputsDiv.appendChild(nameInput);
+            mainInputsDiv.appendChild(rangeInput);
+            mainInputsDiv.appendChild(deleteBtn);
+            itemDiv.appendChild(mainInputsDiv);
+
+            // Create description container and textarea
+            const descriptionContainer = document.createElement('div');
+            descriptionContainer.classList.add('factor-description-container');
+            
+            const descriptionTextarea = document.createElement('textarea');
+            descriptionTextarea.classList.add('factor-description');
+            descriptionTextarea.placeholder = 'Description of this factor and how it affects production rates...';
+            descriptionTextarea.value = factor.description || '';
+            descriptionTextarea.addEventListener('change', (e) => handleGlobalFactorUpdate(factor.id, 'description', e.target.value));
+            
+            descriptionContainer.appendChild(descriptionTextarea);
+            itemDiv.appendChild(descriptionContainer);
+
             globalFactorListDiv.appendChild(itemDiv);
         });
     }
@@ -224,6 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
              document.querySelectorAll(`.factor-edit-panel [data-factor-id="${factorId}"].global-range-display`).forEach(span => span.textContent = `(${value})`);
              // Optionally: Update the *default* currentValue for tasks where this factor isn't actively set? (Tricky decision)
              // For simplicity, we won't reset sliders automatically here.
+        } else if (field === 'description') {
+            config.globalFactors[factorIndex].description = value;
+            // No need to update UI elsewhere for description changes
         }
         // Re-initialize settings in case avgMultiplier changed for default slider values
         initializeTaskFactorSettings();
@@ -243,23 +267,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Add New Factor Logic ---
-    showAddFactorFormBtn.addEventListener('click', () => { addFactorFormDiv.style.display = 'block'; showAddFactorFormBtn.style.display = 'none'; });
-    cancelAddFactorBtn.addEventListener('click', () => { addFactorFormDiv.style.display = 'none'; showAddFactorFormBtn.style.display = 'inline-block'; newFactorNameInput.value = ''; newFactorRangeInput.value = ''; });
+    const newFactorDescriptionTextarea = document.getElementById('new-factor-description');
+    
+    showAddFactorFormBtn.addEventListener('click', () => { 
+        addFactorFormDiv.style.display = 'block'; 
+        showAddFactorFormBtn.style.display = 'none'; 
+    });
+    
+    cancelAddFactorBtn.addEventListener('click', () => { 
+        addFactorFormDiv.style.display = 'none'; 
+        showAddFactorFormBtn.style.display = 'inline-block'; 
+        newFactorNameInput.value = ''; 
+        newFactorRangeInput.value = ''; 
+        newFactorDescriptionTextarea.value = '';
+    });
+    
     addFactorBtn.addEventListener('click', () => {
         const name = newFactorNameInput.value.trim();
         const range = newFactorRangeInput.value.trim();
-        if (!name || !range) { alert('Please enter both name and range.'); return; }
-        const newFactor = { id: generateUniqueId('F'), name: name, multiplierRange: range, avgMultiplier: calculateAverageMultiplier(range) };
+        const description = newFactorDescriptionTextarea.value.trim();
+        
+        if (!name || !range) { 
+            alert('Please enter both name and range.'); 
+            return; 
+        }
+        
+        const newFactor = { 
+            id: generateUniqueId('F'), 
+            name: name, 
+            multiplierRange: range, 
+            description: description, // Add description to the new factor
+            avgMultiplier: calculateAverageMultiplier(range) 
+        };
+        
         config.globalFactors.push(newFactor);
         initializeTaskFactorSettings(); // Add settings placeholder for this new factor for all tasks
         renderGlobalFactorList();
+        
         // Add to open edit panels
-         document.querySelectorAll('.factor-edit-panel').forEach(panel => {
-             if(panel.style.display === 'block') {
-                  const taskId = panel.id.split('-')[3]; // factor-edit-panel-TASKID
-                  renderTaskFactorEditor(taskId, panel); // Re-render panel
-             }
+        document.querySelectorAll('.factor-edit-panel').forEach(panel => {
+            if(panel.style.display === 'block') {
+                const taskId = panel.id.split('-')[3]; // factor-edit-panel-TASKID
+                renderTaskFactorEditor(taskId, panel); // Re-render panel
+            }
         });
+        
         cancelAddFactorBtn.click();
         calculateTotals();
     });
@@ -859,8 +911,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // 1. SOP Details (Same)
             createAndDownloadCsv(`${baseFileName}_sop_details.csv`, ['SOP_Name', 'SOP_Description'], [[currentConfig.sopName, currentConfig.sopDescription]]);
-            // 2. Global Factors (Same)
-             createAndDownloadCsv(`${baseFileName}_global_factors.csv`, ['Factor_ID', 'Factor_Name', 'Multiplier_Range', 'Calculated_Avg_Multiplier'], currentConfig.globalFactors.map(f => [f.id, f.name, f.multiplierRange, f.avgMultiplier]));
+            // 2. Global Factors (Updated to include descriptions)
+             createAndDownloadCsv(`${baseFileName}_global_factors.csv`, 
+                ['Factor_ID', 'Factor_Name', 'Multiplier_Range', 'Calculated_Avg_Multiplier', 'Description'], 
+                currentConfig.globalFactors.map(f => [f.id, f.name, f.multiplierRange, f.avgMultiplier, f.description || '']));
 
             // 3. Tasks CSV (Rate removed, maybe remove other method details too)
             const taskHeaders = ['Task_ID', 'Task_Name', 'Is_Selected', 'Skill_Level', 'Materials_Required', 'Factors_Affecting', 'Description'];

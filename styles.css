@@ -123,10 +123,15 @@ h4 { margin-top: 10px;}
 /* --- Global Factor Management --- */
 .global-factor-item {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     padding: 8px 0;
     border-bottom: 1px solid #eee;
-    flex-wrap: wrap;
+}
+.global-factor-item .factor-main-inputs {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
 }
 .global-factor-item input[type="text"] {
     margin-right: 10px;
@@ -136,6 +141,22 @@ h4 { margin-top: 10px;}
 .global-factor-item button { padding: 4px 8px; font-size: 0.8em;}
 .delete-factor-btn { background-color: #fdd; }
 .delete-factor-btn:hover { background-color: #faa; }
+
+.global-factor-item .factor-description-container {
+    width: 100%;
+    margin-left: 20px; /* Indent description */
+    margin-bottom: 5px;
+}
+.global-factor-item textarea.factor-description {
+    width: calc(100% - 20px);
+    min-height: 40px;
+    resize: vertical;
+    padding: 5px;
+    font-size: 0.9em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+}
 
 .add-factor-form {
     margin-top: 15px;
