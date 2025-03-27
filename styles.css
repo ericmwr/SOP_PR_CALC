@@ -337,3 +337,108 @@ h4 { margin-top: 10px;}
 .results strong {
     color: #1a73e8;
 }
+
+/* --- Methodology & Checklist Page Specific Styles --- */
+
+/* Optional: Container specific adjustments if needed */
+.methodology-container {
+    max-width: 1000px; /* Adjust max-width for this page if desired */
+}
+
+/* Link styled as button */
+.button-link {
+    display: inline-block;
+    padding: 8px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #eee;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+.button-link:hover {
+    background-color: #ddd;
+    text-decoration: none;
+}
+
+
+/* Methodology Section Items */
+.methodology-item {
+    margin-bottom: 20px;
+}
+.methodology-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #444;
+}
+.methodology-item input[type="text"],
+.methodology-item textarea {
+    width: 100%;
+    box-sizing: border-box; /* Include padding/border in width */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit; /* Use consistent font */
+    font-size: 1em;
+}
+.methodology-item textarea {
+    resize: vertical;
+    line-height: 1.5;
+}
+
+/* Checklist Table Styles */
+.table-wrapper {
+    overflow-x: auto; /* Allow horizontal scrolling on small screens if table is wide */
+    margin-bottom: 15px;
+}
+#inspection-checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+#inspection-checklist-table th,
+#inspection-checklist-table td {
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+#inspection-checklist-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+td.editable-cell {
+    /* Indicate editable cells */
+    background-color: #fffff0; /* Light yellow background */
+    cursor: text;
+}
+td.editable-cell:focus {
+    outline: 2px solid #a0d8ff; /* Highlight on focus */
+    background-color: #fff;
+}
+#add-checklist-row-btn {
+    display: block;
+    margin: 10px 0;
+}
+.delete-checklist-row-btn { /* Style for delete buttons if added later */
+     background-color: #ffe0e0;
+     border: 1px solid #ffc0c0;
+     color: #c00;
+     font-weight: bold;
+     cursor: pointer;
+     padding: 3px 6px;
+     border-radius: 3px;
+     font-size: 0.8em;
+     line-height: 1;
+     margin-left: 5px; /* Add some space */
+}
+.delete-checklist-row-btn:hover { background-color: #ffcccc; }
+
+
+/* Specific Save/Load for this page */
+.page-save-load {
+    background-color: #eef; /* Different background */
+}

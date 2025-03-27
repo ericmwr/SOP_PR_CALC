@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Methodology & Checklist Editor</title>
+    <!-- Link the SAME CSS file -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>Measurement Methodology & Inspection Checklist</h1>
+
+    <!-- Link back to main configurator (optional) -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="index.html" class="button-link">« Back to SOP Configurator</a>
+    </div>
+
+    <div class="container methodology-container"> <!-- Use a specific container class if needed -->
+
+        <!-- Save/Load Controls for THIS PAGE -->
+        <div class="section save-load-controls page-save-load">
+            <h2>Page Content</h2>
+            <button id="save-page-btn">Save Page Content</button>
+            <label for="load-page-input" class="button-label">Load Page Content</label>
+            <input type="file" id="load-page-input" accept=".json" style="display: none;">
+        </div>
+
+
+        <!-- Measurement Methodology Section -->
+        <div class="section">
+            <h2>Measurement Methodology</h2>
+
+            <div class="methodology-item">
+                <label for="measurement-unit">Standard Unit:</label>
+                <input type="text" id="measurement-unit" value="Square Foot/Hour">
+            </div>
+
+            <div class="methodology-item">
+                <label for="measurement-procedure">Measurement Procedure:</label>
+                <textarea id="measurement-procedure" rows="7">1. Measure height of wainscote from bottom edge to top edge
+2. Measure length of each wall section where wainscote is installed
+3. Multiply height by length for each section to calculate square footage
+4. Add all sections for total square footage
+5. Deduct openings larger than 2 square feet (doors, large built-ins)
+6. Do not deduct for electrical outlets, wall switches, or small interruptions</textarea>
+            </div>
+
+            <div class="methodology-item">
+                <label for="measurement-special-calcs">Special Calculation Considerations:</label>
+                <textarea id="measurement-special-calcs" rows="6">• For irregular heights, measure at multiple points and use average height
+• For curved walls, break into smaller sections approximately 2-3 feet wide and calculate each segment
+• For inside corners, measure to the corner for each intersecting wall
+• For outside corners, include return dimension in measurement
+• For stairways, divide into triangular and rectangular sections for calculation</textarea>
+            </div>
+
+            <div class="methodology-item">
+                <label for="measurement-prod-rate-calc">Production Rate Calculation:</label>
+                <textarea id="measurement-prod-rate-calc" rows="6">1. Determine baseline production rate from tables based on complexity
+2. Apply adjustment factors for specific project conditions
+3. Calculate labor hours by dividing total square footage by adjusted production rate
+4. Add setup and cleanup time (typically 30-60 minutes per day)
+5. Add travel time between areas if applicable (typically 10-15 minutes per floor change)</textarea>
+            </div>
+        </div>
+
+
+        <!-- Estimating Inspection Checklist Section -->
+        <div class="section">
+            <h2>Estimating Inspection Checklist</h2>
+            <div class="table-wrapper">
+                <table id="inspection-checklist-table">
+                    <thead>
+                        <tr>
+                            <th>Inspection Point</th>
+                            <th>Description</th>
+                            <th>Common Issues</th>
+                            <th>Rate Adjustment Conditions</th>
+                            <th>Photo Documentation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checklist-table-body">
+                        <!-- Rows will be populated by JS -->
+                        <tr>
+                            <td contenteditable="true" class="editable-cell">Factory Primer Condition</td>
+                            <td contenteditable="true" class="editable-cell">Assess coverage, adhesion, and uniformity of factory primer</td>
+                            <td contenteditable="true" class="editable-cell">Thin spots, poor adhesion, inconsistent coverage</td>
+                            <td contenteditable="true" class="editable-cell">Reduce rate by 20-30% if significant repriming needed</td>
+                            <td contenteditable="true" class="editable-cell">Close-up of typical surface and any defects</td>
+                        </tr>
+                        <tr>
+                            <td contenteditable="true" class="editable-cell">Bead Profile</td>
+                            <td contenteditable="true" class="editable-cell">Measure depth and width of grooves, assess complexity</td>
+                            <td contenteditable="true" class="editable-cell">Very deep grooves, intricate patterns, non-standard profiles</td>
+                            <td contenteditable="true" class="editable-cell">Reduce rate by 15-25% for deep/complex patterns</td>
+                            <td contenteditable="true" class="editable-cell">Photo with measuring tool for scale</td>
+                        </tr>
+                        <tr>
+                             <td contenteditable="true" class="editable-cell">Surface Texture</td>
+                             <td contenteditable="true" class="editable-cell">Feel surface for roughness, grain raise, or defects</td>
+                             <td contenteditable="true" class="editable-cell">Rough texture, grain raise, debris in primer</td>
+                             <td contenteditable="true" class="editable-cell">Reduce rate by 10-15% if significant sanding required</td>
+                             <td contenteditable="true" class="editable-cell">Close-up showing texture</td>
+                         </tr>
+                         <tr>
+                             <td contenteditable="true" class="editable-cell">Installation Quality</td>
+                             <td contenteditable="true" class="editable-cell">Inspect seams, joints, and fastener setting</td>
+                             <td contenteditable="true" class="editable-cell">Gaps at seams, proud fasteners, misaligned sections</td>
+                             <td contenteditable="true" class="editable-cell">Reduce rate by 15-20% for poor installation</td>
+                             <td contenteditable="true" class="editable-cell">Photos of problematic areas</td>
+                         </tr>
+                          <tr>
+                             <td contenteditable="true" class="editable-cell">Edge and Transition Details</td>
+                             <td contenteditable="true" class="editable-cell">Examine all transitions to other surfaces</td>
+                             <td contenteditable="true" class="editable-cell">Complex moldings, irregular edges, multiple materials</td>
+                             <td contenteditable="true" class="editable-cell">Reduce rate by 10-15% for complex transitions</td>
+                             <td contenteditable="true" class="editable-cell">Photos of typical transitions</td>
+                         </tr>
+                         <tr>
+                              <td contenteditable="true" class="editable-cell">Corner Quantity</td>
+                              <td contenteditable="true" class="editable-cell">Count number of inside/outside corners</td>
+                              <td contenteditable="true" class="editable-cell">Excessive corners, irregular angles</td>
+                              <td contenteditable="true" class="editable-cell">Add 5-10 minutes per corner beyond 4 corners per 100 SF</td>
+                              <td contenteditable="true" class="editable-cell">Photo of layout showing corners</td>
+                          </tr>
+                          <tr>
+                              <td contenteditable="true" class="editable-cell">Moisture Content</td>
+                              <td contenteditable="true" class="editable-cell">Test with moisture meter at multiple locations</td>
+                              <td contenteditable="true" class="editable-cell">Reading above 12%, inconsistent readings</td>
+                              <td contenteditable="true" class="editable-cell">Delay project if readings exceed 12%</td>
+                              <td contenteditable="true" class="editable-cell">Photo of meter reading</td>
+                          </tr>
+                          <tr>
+                              <td contenteditable="true" class="editable-cell">Work Access</td>
+                              <td contenteditable="true" class="editable-cell">Evaluate ease of access to all areas</td>
+                              <td contenteditable="true" class="editable-cell">Furniture proximity, restricted movement, height challenges</td>
+                              <td contenteditable="true" class="editable-cell">Reduce rate by 20-30% for difficult access</td>
+                              <td contenteditable="true" class="editable-cell">Photos showing access restrictions</td>
+                          </tr>
+                          <tr>
+                              <td contenteditable="true" class="editable-cell">Required Finish Level</td>
+                              <td contenteditable="true" class="editable-cell">Verify quality expectations and finish requirements</td>
+                              <td contenteditable="true" class="editable-cell">Unrealistic expectations, non-standard finish requirements</td>
+                              <td contenteditable="true" class="editable-cell">Adjust based on required quality level (economy, standard, premium)</td>
+                              <td contenteditable="true" class="editable-cell">Document finish level agreement</td>
+                          </tr>
+                    </tbody>
+                </table>
+            </div>
+             <button id="add-checklist-row-btn">+ Add Checklist Row</button>
+        </div>
+
+    </div> <!-- End container -->
+
+    <!-- Link NEW JavaScript file for this page -->
+    <script src="methodology_checklist_script.js"></script>
+</body>
+</html>
