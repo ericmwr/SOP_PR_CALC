@@ -38,11 +38,12 @@ body {
 
 /* --- Main Content Area --- */
 .main-content {
-    /* Needs padding on the right to avoid being overlapped by the fixed sidebar */
-    padding-right: 380px; /* Example: 320px width + 20px right + 40px gap */
+    /* Needs padding on the left to avoid being overlapped by the fixed sidebar */
+    padding-left: 440px; /* 400px width + 20px left + 20px gap */
+    padding-right: 20px;
     max-width: 950px;
-    margin-left: 20px; /* Add some left margin if body has no padding */
-    margin-right: auto; /* Keep it somewhat centered before the sidebar padding */
+    margin-left: auto; /* Center the content */
+    margin-right: auto; /* Center the content */
 }
 .main-content .section {
      /* Styles for sections specifically within the main content */
@@ -55,14 +56,14 @@ body {
 .sidebar-content {
     position: fixed;
     top: 65px; /* ADJUSTED: Reduced top offset */
-    right: 20px; /* Space from the right edge */
-    width: 320px; /* Fixed width for the sidebar */
+    left: 20px; /* Changed from right to left */
+    width: 400px; /* Increased width for the sidebar */
     height: calc(100vh - 85px); /* ADJUSTED: Reduced total offset */
     overflow-y: auto; /* Allow sidebar content to scroll if it overflows */
     background-color: #f8f9fa; /* Light background for sidebar */
     padding: 15px; /* Slightly reduced padding */
     border-radius: 8px;
-    box-shadow: -3px 0px 10px rgba(0, 0, 0, 0.1); /* Shadow on the left */
+    box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1); /* Shadow on the right */
     z-index: 100; /* Ensure it stays on top */
     box-sizing: border-box; /* Include padding in width/height */
 }
@@ -85,7 +86,15 @@ body {
 }
 .sidebar-content .section > div > label {
     /* Adjust label width in sidebar if needed */
-    min-width: 150px; /* Slightly less width might be ok */
+    min-width: 120px; /* Reduced width for labels */
+    font-size: 0.9em; /* Slightly smaller font for labels */
+}
+
+/* Adjust inputs in sidebar */
+.sidebar-content input[type="text"],
+.sidebar-content textarea {
+    width: calc(100% - 130px); /* Account for label width */
+    font-size: 0.95em;
 }
 
 h1, h2, h4 {

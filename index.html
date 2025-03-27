@@ -20,7 +20,17 @@
 
         <!-- Main Content Area -->
         <div class="main-content">
+            <!-- Task Management & Configuration -->
+            <div class="section">
+                <h2>Manage Tasks & Task-Specific Factors</h2>
+                <div id="task-list"></div>
+                <button id="add-task-btn">+ Add New Task</button>
+            </div>
+        </div> <!-- End Main Content Area -->
 
+
+        <!-- Sidebar Area -->
+        <div class="sidebar-content">
             <!-- SOP Header Section -->
             <div class="section sop-header">
                 <h2>SOP Details</h2>
@@ -49,20 +59,7 @@
                 </div>
             </div>
 
-            <!-- Task Management & Configuration -->
-            <div class="section">
-                <h2>Manage Tasks & Task-Specific Factors</h2>
-                <div id="task-list"></div>
-                <button id="add-task-btn">+ Add New Task</button>
-            </div>
-
-        </div> <!-- End Main Content Area -->
-
-
-        <!-- Sidebar Area -->
-        <div class="sidebar-content">
-
-            <!-- Configuration Controls (Moved) -->
+            <!-- Configuration Controls -->
             <div class="section save-load-controls">
                 <h2>Configuration</h2>
                 <button id="save-config-json-btn">Save Config (JSON)</button>
@@ -71,7 +68,7 @@
                 <input type="file" id="load-config-input" accept=".json" style="display: none;">
             </div>
 
-            <!-- Project Inputs (Moved) -->
+            <!-- Project Inputs -->
             <div class="section">
                 <h2>Project Details (For Estimation Only)</h2>
                 <div>
@@ -84,7 +81,7 @@
                 </div>
             </div>
 
-            <!-- Estimated Results (Moved) -->
+            <!-- Estimated Results -->
             <div class="section results">
                 <h2>Estimated Results</h2>
                 <p>Final Production Rate: <strong id="final-rate">N/A</strong> SF/HR</p>
