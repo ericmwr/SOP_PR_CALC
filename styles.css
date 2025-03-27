@@ -23,12 +23,7 @@
     min-height: 60px; /* Minimum height */
 }
 
-body {
-    font-family: sans-serif;
-    line-height: 1.6;
-    margin: 20px;
-    background-color: #f4f4f4;
-}
+/* Body styling moved below */
 
 /* --- Layout Wrapper --- */
 .app-wrapper {
@@ -37,7 +32,17 @@ body {
     grid-gap: 20px;
     margin: 0 auto; /* Center */
     max-width: 1400px; /* Overall max-width */
-    padding: 0 15px;
+    padding: 0; /* Remove horizontal padding */
+}
+
+/* Add padding to body instead for overall page margin */
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 20px auto; /* Center the body content */
+    background-color: #f4f4f4;
+    padding: 0 20px; /* Add horizontal padding to body instead */
+    max-width: 1440px; /* Slightly larger than app-wrapper to account for padding */
 }
 
 /* --- Main Content Area --- */
@@ -133,10 +138,7 @@ body {
     min-width: 180px; /* Ensure minimum width */
 }
 
-/* Increase the left sidebar width to accommodate wider inputs */
-.app-wrapper {
-    grid-template-columns: 380px 1fr 280px; /* Increased left sidebar width from 320px to 380px */
-}
+/* Increase the left sidebar width to accommodate wider inputs - defined in Layout Wrapper section */
 
 /* Remove the main content padding */
 
