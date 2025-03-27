@@ -131,13 +131,83 @@ h4 { margin-top: 10px;}
 .task-main-controls button { margin-left: 10px; } /* Space out buttons */
 
 
-/* NEW: Task Details Grid */
+/* --- Task Details Grid Updates --- */
 .task-details-grid {
+    /* Keep previous styles, ensure Rate row is removed */
     display: grid;
     grid-template-columns: auto 1fr; /* Label column, Input column */
     gap: 8px 10px; /* Row gap, Column gap */
     margin-left: 28px; /* Indent details slightly */
+    margin-bottom: 15px; /* Add margin below details */
+}
+/* Remove specific style for task-rate-input if it was inside the grid */
+
+
+/* --- NEW: Task Methods Section Styling --- */
+.task-methods-section {
+    margin-left: 28px; /* Align with details grid */
+    margin-bottom: 15px;
+    padding-top: 10px;
+    border-top: 1px dotted #ccc; /* Separator */
+}
+.task-methods-section h4 {
+    text-align: left;
+    font-size: 1em;
     margin-bottom: 10px;
+    color: #444;
+}
+.task-methods-list {
+    margin-bottom: 10px;
+}
+.method-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+.method-item input[type="radio"] {
+    margin-right: 8px;
+}
+.method-item input.method-name-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.method-item input.method-rate-input {
+    width: 70px;
+    text-align: right;
+    margin-right: 5px;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.method-item span { /* SF/HR unit */
+    font-size: 0.9em;
+    color: #555;
+    margin-right: 10px;
+}
+.method-item .delete-method-btn {
+    background-color: #ffe0e0;
+    border: 1px solid #ffc0c0;
+    color: #c00;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    line-height: 1;
+}
+.method-item .delete-method-btn:hover {
+    background-color: #ffcccc;
+}
+.add-method-btn {
+    font-size: 0.9em;
+    padding: 5px 10px;
 }
 .task-details-grid > div {
     display: contents; /* Allow direct children (label, input) to participate in grid */
