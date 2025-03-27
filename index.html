@@ -15,22 +15,11 @@
         <a href="methodology_checklist.html" class="button-link">Measurement Methodology & Inspection Checklist »</a>
     </div>
 
-    <!-- New Wrapper for Main Content + Sidebar -->
+    <!-- New Wrapper for 3-Column Layout -->
     <div class="app-wrapper">
 
-        <!-- Main Content Area -->
-        <div class="main-content">
-            <!-- Task Management & Configuration -->
-            <div class="section">
-                <h2>Manage Tasks & Task-Specific Factors</h2>
-                <div id="task-list"></div>
-                <button id="add-task-btn">+ Add New Task</button>
-            </div>
-        </div> <!-- End Main Content Area -->
-
-
-        <!-- Sidebar Area -->
-        <div class="sidebar-content">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar">
             <!-- SOP Header Section -->
             <div class="section sop-header">
                 <h2>SOP Details</h2>
@@ -46,19 +35,37 @@
 
             <!-- Global Factor Management -->
             <div class="section">
-                <h2>Manage Global Factors (Base Settings)</h2>
-                <div id="global-factor-list"></div>
-                <button id="show-add-factor-form-btn">+ Add New Factor</button>
-                <div id="add-factor-form" class="add-factor-form" style="display: none;">
-                    <h4>New Factor Details</h4>
-                    <input type="text" id="new-factor-name" placeholder="Factor Name">
-                    <input type="text" id="new-factor-range" placeholder="Multiplier Range (e.g., 0.7-0.9)">
-                    <textarea id="new-factor-description" placeholder="Description of this factor and how it affects production rates..." rows="3"></textarea>
-                    <button id="add-factor-btn">Add Factor</button>
-                    <button id="cancel-add-factor-btn">Cancel</button>
+                <div class="section-header">
+                    <h2>Manage Global Factors (Base Settings)</h2>
+                    <button class="toggle-collapse-btn" data-target="global-factors-content">▼</button>
+                </div>
+                <div id="global-factors-content" class="section-content">
+                    <div id="global-factor-list"></div>
+                    <button id="show-add-factor-form-btn">+ Add New Factor</button>
+                    <div id="add-factor-form" class="add-factor-form" style="display: none;">
+                        <h4>New Factor Details</h4>
+                        <input type="text" id="new-factor-name" placeholder="Factor Name">
+                        <input type="text" id="new-factor-range" placeholder="Multiplier Range (e.g., 0.7-0.9)">
+                        <textarea id="new-factor-description" placeholder="Description of this factor and how it affects production rates..." rows="3"></textarea>
+                        <button id="add-factor-btn">Add Factor</button>
+                        <button id="cancel-add-factor-btn">Cancel</button>
+                    </div>
                 </div>
             </div>
+        </div> <!-- End Left Sidebar -->
 
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Task Management & Configuration -->
+            <div class="section">
+                <h2>Manage Tasks & Task-Specific Factors</h2>
+                <div id="task-list"></div>
+                <button id="add-task-btn">+ Add New Task</button>
+            </div>
+        </div> <!-- End Main Content Area -->
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
             <!-- Configuration Controls -->
             <div class="section save-load-controls">
                 <h2>Configuration</h2>
@@ -88,8 +95,7 @@
                 <p>Estimated Time to Complete: <strong id="total-time">N/A</strong> Hours</p>
                 <p>Estimated Labor Cost: $<strong id="total-cost">N/A</strong></p>
             </div>
-
-        </div> <!-- End Sidebar Area -->
+        </div> <!-- End Right Sidebar -->
 
     </div> <!-- End App Wrapper -->
 

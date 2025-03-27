@@ -1,4 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize section collapse functionality
+    document.querySelectorAll('.toggle-collapse-btn').forEach(btn => {
+        const targetId = btn.dataset.target;
+        if (targetId) {
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                // Default to collapsed
+                targetElement.classList.add('collapsed');
+                btn.textContent = '►'; // Right arrow for collapsed
+                
+                btn.addEventListener('click', () => {
+                    targetElement.classList.toggle('collapsed');
+                    if (targetElement.classList.contains('collapsed')) {
+                        btn.textContent = '►'; // Right arrow for collapsed
+                    } else {
+                        btn.textContent = '▼'; // Down arrow for expanded
+                    }
+                });
+            }
+        }
+    });
     // --- GLOBAL DATA STORE ---
     let config = {
         sopName: "New Construction Interior - Wainscot - Bead-Board Painting",
@@ -425,9 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const taskItemDiv = document.createElement('div');
             taskItemDiv.classList.add('task-item'); taskItemDiv.id = `task-item-${task.id}`; taskItemDiv.dataset.taskId = task.id;
 
-            // Check if task has a collapsed state stored
-            if (task.isCollapsed) {
+            // Default to collapsed unless explicitly set to not collapsed
+            if (task.isCollapsed !== false) {
                 taskItemDiv.classList.add('collapsed');
+                task.isCollapsed = true; // Store state in config
             }
 
             // --- Main Controls Row (Checkbox, Name, Buttons) ---
