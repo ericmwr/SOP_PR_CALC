@@ -50,7 +50,17 @@ The SOP (Standard Operating Procedure) Calculator is a web application designed 
 - Load saved configurations
 - Backward compatibility for loading older configurations
 
+### 8. Improved UI Layout
+- Sticky sidebar for important controls and results
+- Configuration controls, project details, and results always visible while scrolling
+- Responsive design with proper spacing and alignment
+- Clear visual separation between main content and sidebar
+
 ## Recent Updates
+- Implemented a sticky sidebar layout to keep important controls and results visible
+- Moved configuration, project details, and results sections to the sidebar
+- Improved overall UI organization with a more intuitive layout
+- Enhanced visual styling with proper spacing and shadows
 - Implemented multiple application methods per task, replacing the single base rate
 - Added UI for managing methods with radio button selection
 - Updated calculation logic to use the selected method's rate
