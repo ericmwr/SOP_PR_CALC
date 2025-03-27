@@ -340,9 +340,17 @@ h4 { margin-top: 10px;}
 
 /* --- Methodology & Checklist Page Specific Styles --- */
 
-/* Optional: Container specific adjustments if needed */
+/* Container specific adjustments for methodology page */
 .methodology-container {
     max-width: 1000px; /* Adjust max-width for this page if desired */
+    margin: 0 auto; /* Center the container */
+    padding: 0 20px; /* Add some horizontal padding */
+}
+
+/* Center the container on the page */
+.container {
+    margin: 0 auto; /* Center the container */
+    max-width: 1000px; /* Set a max width */
 }
 
 /* Link styled as button */
