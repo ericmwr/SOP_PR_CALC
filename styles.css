@@ -238,6 +238,19 @@ h4 { margin-top: 10px;}
     background-color: #fefefe; /* Slightly off-white */
 }
 
+/* Collapsed state styling */
+.task-item.collapsed .task-details-grid,
+.task-item.collapsed .task-methods-section,
+.task-item.collapsed .factor-edit-panel {
+    display: none !important; /* Hide all content when collapsed */
+}
+.task-item.collapsed {
+    padding-bottom: 10px; /* Reduce padding when collapsed */
+}
+.task-item.collapsed .task-main-controls {
+    margin-bottom: 0; /* Remove bottom margin when collapsed */
+}
+
 .task-main-controls { /* Top row: Checkbox, Name, Buttons */
     display: flex;
     align-items: center;
@@ -259,6 +272,29 @@ h4 { margin-top: 10px;}
     border-bottom: 1px solid #aaa;
 }
 .task-main-controls button { margin-left: 10px; } /* Space out buttons */
+
+/* Toggle collapse button */
+.toggle-collapse-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 0.8em;
+    cursor: pointer;
+    color: #555;
+}
+.toggle-collapse-btn:hover {
+    background-color: #e0e0e0;
+}
+.toggle-collapse-btn::before {
+    content: "▼"; /* Down arrow for expanded */
+    display: inline-block;
+    margin-right: 3px;
+    font-size: 0.8em;
+}
+.task-item.collapsed .toggle-collapse-btn::before {
+    content: "►"; /* Right arrow for collapsed */
+}
 
 
 /* --- Task Details Grid Updates --- */

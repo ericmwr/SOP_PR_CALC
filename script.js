@@ -425,29 +425,60 @@ document.addEventListener('DOMContentLoaded', () => {
             const taskItemDiv = document.createElement('div');
             taskItemDiv.classList.add('task-item'); taskItemDiv.id = `task-item-${task.id}`; taskItemDiv.dataset.taskId = task.id;
 
+            // Check if task has a collapsed state stored
+            if (task.isCollapsed) {
+                taskItemDiv.classList.add('collapsed');
+            }
+
             // --- Main Controls Row (Checkbox, Name, Buttons) ---
-            const controlsDiv = document.createElement('div'); controlsDiv.classList.add('task-main-controls');
-             const checkbox = document.createElement('input'); /* ... (same as before) ... */
-             checkbox.type = 'checkbox'; checkbox.id = `task-${task.id}`; checkbox.value = task.id;
-             checkbox.checked = task.isSelected; checkbox.dataset.taskId = task.id;
-             checkbox.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).isSelected = e.target.checked; calculateTotals(); });
+            const controlsDiv = document.createElement('div'); 
+            controlsDiv.classList.add('task-main-controls');
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox'; 
+            checkbox.id = `task-${task.id}`; 
+            checkbox.value = task.id;
+            checkbox.checked = task.isSelected; 
+            checkbox.dataset.taskId = task.id;
+            checkbox.addEventListener('change', (e) => { 
+                config.tasks.find(t=>t.id===task.id).isSelected = e.target.checked; 
+                calculateTotals(); 
+            });
 
-             const nameInput = document.createElement('input'); /* ... (same as before) ... */
-             nameInput.type = 'text'; nameInput.classList.add('task-name-input');
-             nameInput.value = task.name; nameInput.dataset.taskId = task.id;
-             nameInput.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).name = e.target.value; });
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text'; 
+            nameInput.classList.add('task-name-input');
+            nameInput.value = task.name; 
+            nameInput.dataset.taskId = task.id;
+            nameInput.addEventListener('change', (e) => { 
+                config.tasks.find(t=>t.id===task.id).name = e.target.value; 
+            });
 
-             const editFactorsBtn = document.createElement('button'); /* ... (same as before) ... */
-             editFactorsBtn.textContent = 'Edit Factors'; editFactorsBtn.classList.add('edit-factors-btn');
-             editFactorsBtn.dataset.taskId = task.id; editFactorsBtn.addEventListener('click', toggleFactorEditPanel);
+            // Add toggle collapse button
+            const toggleCollapseBtn = document.createElement('button');
+            toggleCollapseBtn.classList.add('toggle-collapse-btn');
+            toggleCollapseBtn.textContent = task.isCollapsed ? 'Expand' : 'Collapse';
+            toggleCollapseBtn.dataset.taskId = task.id;
+            toggleCollapseBtn.addEventListener('click', handleToggleCollapse);
 
-             const deleteBtn = document.createElement('button'); /* ... (same as before) ... */
-             deleteBtn.textContent = 'Delete Task'; deleteBtn.classList.add('delete-task-btn');
-             deleteBtn.dataset.taskId = task.id; deleteBtn.addEventListener('click', handleDeleteTask);
+            const editFactorsBtn = document.createElement('button');
+            editFactorsBtn.textContent = 'Edit Factors'; 
+            editFactorsBtn.classList.add('edit-factors-btn');
+            editFactorsBtn.dataset.taskId = task.id; 
+            editFactorsBtn.addEventListener('click', toggleFactorEditPanel);
 
-             controlsDiv.appendChild(checkbox); controlsDiv.appendChild(nameInput);
-             controlsDiv.appendChild(editFactorsBtn); controlsDiv.appendChild(deleteBtn);
-             taskItemDiv.appendChild(controlsDiv);
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete Task'; 
+            deleteBtn.classList.add('delete-task-btn');
+            deleteBtn.dataset.taskId = task.id; 
+            deleteBtn.addEventListener('click', handleDeleteTask);
+
+            controlsDiv.appendChild(checkbox); 
+            controlsDiv.appendChild(nameInput);
+            controlsDiv.appendChild(toggleCollapseBtn);
+            controlsDiv.appendChild(editFactorsBtn); 
+            controlsDiv.appendChild(deleteBtn);
+            taskItemDiv.appendChild(controlsDiv);
 
             // --- Details Grid (Rate Removed) ---
             const detailsGridDiv = document.createElement('div'); detailsGridDiv.classList.add('task-details-grid');
@@ -673,6 +704,25 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTaskMethods(taskId, methodsListDiv);
         }
         calculateTotals(); // Recalculate
+    }
+
+    // Handler for collapsing/expanding tasks
+    function handleToggleCollapse(event) {
+        const button = event.target;
+        const taskId = button.dataset.taskId;
+        const taskItem = document.getElementById(`task-item-${taskId}`);
+        const task = config.tasks.find(t => t.id === taskId);
+        
+        if (!taskItem || !task) return;
+        
+        // Toggle collapsed state
+        const isCollapsed = taskItem.classList.toggle('collapsed');
+        
+        // Update button text
+        button.textContent = isCollapsed ? 'Expand' : 'Collapse';
+        
+        // Store state in config for persistence
+        task.isCollapsed = isCollapsed;
     }
 
     function handleDeleteTask(event) {
