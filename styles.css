@@ -43,6 +43,8 @@ body {
 /* --- Main Content Area --- */
 .main-content {
     min-width: 0; /* Allow content to shrink if needed */
+    padding-left: 0; /* Remove left padding */
+    padding-right: 0; /* Remove right padding */
 }
 .main-content .section {
     background: #fff; /* White background for main sections */
@@ -136,10 +138,7 @@ body {
     grid-template-columns: 380px 1fr 280px; /* Increased left sidebar width from 320px to 380px */
 }
 
-/* Adjust main content padding to match new sidebar width */
-.main-content {
-    padding-left: 500px; /* Increased from 440px to match wider sidebar */
-}
+/* Remove the main content padding */
 
 /* Specific styling for Project Details inputs */
 .right-sidebar input[type="text"],
