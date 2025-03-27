@@ -18,37 +18,47 @@ The SOP (Standard Operating Procedure) Calculator is a web application designed 
 - Add, edit, and delete tasks
 - Each task includes:
   - Name
-  - Base production rate (SF/HR)
   - Selection status (included/excluded from calculations)
+  - Multiple application methods with individual rates
   - Skill level required
   - Materials required
-  - Application methods
   - Factors affecting the task
   - Detailed description
 
-### 4. Task-Specific Factor Application
+### 4. Application Methods Management
+- Define multiple application methods for each task
+- Each method has its own name and production rate
+- Select which method to use for calculations
+- Add and delete methods as needed
+- At least one method is always maintained per task
+
+### 5. Task-Specific Factor Application
 - Apply global factors to specific tasks
 - Adjust factor multipliers for each task individually
 - Visual editor for factor application
 
-### 5. Calculation Features
+### 6. Calculation Features
 - Automatic calculation of final production rate
+- Uses the selected application method's rate for each task
 - Estimated time to complete based on project area
 - Estimated labor cost based on hourly rate
 
-### 6. Import/Export Functionality
+### 7. Import/Export Functionality
 - Save configuration as JSON
 - Export data as CSV files (multiple files for different aspects)
+- Dedicated CSV export for application methods
 - Load saved configurations
+- Backward compatibility for loading older configurations
 
 ## Recent Updates
-- Added detailed task information fields (skill level, materials, application methods, factors affecting, description)
-- Improved UI with a grid layout for task details
-- Enhanced save/load functionality to handle the new fields
+- Implemented multiple application methods per task, replacing the single base rate
+- Added UI for managing methods with radio button selection
+- Updated calculation logic to use the selected method's rate
+- Enhanced CSV export to include a dedicated task_methods.csv file
+- Improved save/load functionality to handle the new data structure
 - Added backward compatibility for loading older configurations
 
 ## Planned Improvements
-- Enhance the application methods section with standardized options
 - Add reporting features
 - Implement data visualization for production rates
 - Add user authentication for saving configurations to the cloud
