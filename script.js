@@ -2,37 +2,54 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- GLOBAL DATA STORE ---
     let config = {
         sopName: "New Construction Interior - Wainscot - Bead-Board Painting",
-        sopDescription: "This specification covers the painting of factory primed bead-board wainscote...",
-        globalFactors: [
-             // ... (keep factors as before) ...
-            { id: 'F01', name: 'Deep/Complex Bead Pattern', multiplierRange: '0.75-0.85'},
-            { id: 'F02', name: 'Shallow/Simple Bead Pattern', multiplierRange: '1.1-1.2'},
-            { id: 'F03', name: 'Poor Factory Primer Condition', multiplierRange: '0.7-0.8'},
-            { id: 'F04', name: 'Excellent Factory Primer Condition', multiplierRange: '1.1-1.2'},
-            { id: 'F05', name: 'High Detail Areas (>1 per 50 SF)', multiplierRange: '0.8-0.9'},
-            { id: 'F06', name: 'Seamless Runs (>50 LF)', multiplierRange: '1.1-1.2'},
-            { id: 'F07', name: 'Working Height >7 ft', multiplierRange: '0.8-0.9'},
-            { id: 'F08', name: 'Restricted Access', multiplierRange: '0.7-0.8'},
-            { id: 'F09', name: 'Dark Color (Extra Coat Possible)', multiplierRange: '0.85-0.9'},
-            { id: 'F10', name: 'High-Gloss Finish', multiplierRange: '0.8-0.85'},
-        ],
+        sopDescription: "This specification covers the painting...",
+        globalFactors: [ /* ... keep factors ... */ ],
         tasks: [
-            // *** UPDATED TASK STRUCTURE ***
-            { id: 'T001', name: 'Surface Inspection', baseRate: 550, isSelected: true, skillLevel: 'Medium', materialsRequired: 'Bright flashlight, Moisture meter', applicationMethods: 'Visual and tactile inspection', factorsAffecting: 'Surface condition, Lighting conditions', description: 'Thoroughly examine the factory primed wainscote...' },
-            { id: 'T002', name: 'Surface Cleaning', baseRate: 275, isSelected: true, skillLevel: 'Low', materialsRequired: 'Tack cloth, Vacuum w/ brush, TSP substitute', applicationMethods: 'Hand wiping, Vacuuming', factorsAffecting: 'Dust level, Site cleanliness', description: 'Remove all dust, dirt, and contaminants...' },
-            { id: 'T003', name: 'Nail Hole Filling/Spackling', baseRate: 200, isSelected: true, skillLevel: 'Medium', materialsRequired: 'Lightweight spackling, Putty knife', applicationMethods: 'Knife/Finger application', factorsAffecting: 'Number of holes, Depth', description: 'Fill all nail holes, dents...' },
-            { id: 'T004', name: 'Caulking Seams & Transitions', baseRate: 175, isSelected: true, skillLevel: 'Medium', materialsRequired: 'Paintable acrylic caulk, Caulk gun', applicationMethods: 'Gun application, Tool w/ finger', factorsAffecting: 'Number of seams, Gap width', description: 'Apply paintable acrylic caulk...' },
-            { id: 'T005', name: 'Sanding Preparation', baseRate: 225, isSelected: true, skillLevel: 'Medium', materialsRequired: '220-grit sandpaper, Sanding sponge', applicationMethods: 'Hand/Sponge sanding', factorsAffecting: 'Primer condition, Detail complexity', description: 'Lightly sand entire surface...' },
-            { id: 'T006', name: 'Spot Priming (as needed)', baseRate: 250, isSelected: true, skillLevel: 'Medium', materialsRequired: 'Acrylic primer, Brush, Mini-roller', applicationMethods: 'Brush/Roll application', factorsAffecting: 'Area requiring priming, Primer quality', description: 'Apply primer to all spackled areas...' },
-            { id: 'T007', name: 'First Coat Application', baseRate: 200, isSelected: true, skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', applicationMethods: 'Brush/Roll, Spray+Backbrush', factorsAffecting: 'Groove complexity, Paint viscosity', description: 'Apply first coat of finish paint...' },
-            { id: 'T008', name: 'Light Sanding Between Coats', baseRate: 325, isSelected: true, skillLevel: 'Medium', materialsRequired: '320-grit sandpaper, Sanding sponge', applicationMethods: 'Hand/Sponge sanding', factorsAffecting: 'First coat smoothness, Env. conditions', description: 'Once first coat is dry, lightly sand...' },
-            { id: 'T009', name: 'Final Coat Application', baseRate: 225, isSelected: true, skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', applicationMethods: 'Brush/Roll, Spray+Backbrush', factorsAffecting: 'Groove complexity, Coverage needs', description: 'Apply final coat using same technique...' },
-            { id: 'T010', name: 'Post-Finish Inspection', baseRate: 475, isSelected: true, skillLevel: 'High', materialsRequired: 'Bright movable lighting', applicationMethods: 'Visual inspection', factorsAffecting: 'Lighting conditions, Quality standards', description: 'After final coat has dried, inspect...' },
-            { id: 'T011', name: 'Final Touch-Up', baseRate: 350, isSelected: true, skillLevel: 'High', materialsRequired: 'Touch-up kit, Artist brushes', applicationMethods: 'Spot application, Feathering', factorsAffecting: 'Number of defects, Visibility', description: 'Address all identified defects...' },
-            // Optional Tasks need new fields too
-            { id: 'OPT01', name: 'Heavy Duty Cleaning', baseRate: 175, isSelected: false, skillLevel: 'Low', materialsRequired: 'Degreaser, Brushes, Water', applicationMethods: 'Scrubbing, Rinsing', factorsAffecting: 'Level of contamination', description: 'Extensive cleaning for heavily soiled surfaces.' },
-            { id: 'OPT02', name: 'Full Surface Priming', baseRate: 175, isSelected: false, skillLevel: 'Medium', materialsRequired: 'Primer, Brushes, Rollers', applicationMethods: 'Brush/Roll application', factorsAffecting: 'Surface porosity, Stains', description: 'Apply primer to the entire surface.' },
-            { id: 'OPT03', name: 'Extensive Masking', baseRate: 125, isSelected: false, skillLevel: 'Medium', materialsRequired: 'Tape, Plastic/Paper sheeting', applicationMethods: 'Manual application', factorsAffecting: 'Complexity of areas to protect', description: 'Detailed masking of adjacent surfaces.' },
+            // *** UPDATED TASK STRUCTURE with 'methods' array ***
+            { id: 'T001', name: 'Surface Inspection', isSelected: true,
+              methods: [{ name: 'Visual/Tactile', rate: 550, isSelected: true }], // Rate moved here
+              skillLevel: 'Medium', materialsRequired: 'Bright flashlight, Moisture meter', factorsAffecting: 'Surface condition, Lighting conditions', description: 'Thoroughly examine...' },
+            { id: 'T002', name: 'Surface Cleaning', isSelected: true,
+              methods: [{ name: 'Vacuum/Wipe', rate: 275, isSelected: true }],
+              skillLevel: 'Low', materialsRequired: 'Tack cloth, Vacuum w/ brush, TSP substitute', factorsAffecting: 'Dust level, Site cleanliness', description: 'Remove all dust...' },
+            { id: 'T003', name: 'Nail Hole Filling/Spackling', isSelected: true,
+              methods: [{ name: 'Knife/Finger', rate: 200, isSelected: true }],
+              skillLevel: 'Medium', materialsRequired: 'Lightweight spackling, Putty knife', factorsAffecting: 'Number of holes, Depth', description: 'Fill all nail holes...' },
+            { id: 'T004', name: 'Caulking Seams & Transitions', isSelected: true,
+              methods: [{ name: 'Gun/Tool', rate: 175, isSelected: true }],
+              skillLevel: 'Medium', materialsRequired: 'Paintable acrylic caulk, Caulk gun', factorsAffecting: 'Number of seams, Gap width', description: 'Apply paintable acrylic caulk...' },
+            { id: 'T005', name: 'Sanding Preparation', isSelected: true,
+              methods: [{ name: 'Hand/Sponge', rate: 225, isSelected: true }],
+              skillLevel: 'Medium', materialsRequired: '220-grit sandpaper, Sanding sponge', factorsAffecting: 'Primer condition, Detail complexity', description: 'Lightly sand entire surface...' },
+            { id: 'T006', name: 'Spot Priming (as needed)', isSelected: true,
+              methods: [{ name: 'Brush/Mini-Roll', rate: 250, isSelected: true }],
+              skillLevel: 'Medium', materialsRequired: 'Acrylic primer, Brush, Mini-roller', factorsAffecting: 'Area requiring priming, Primer quality', description: 'Apply primer to spackled areas...' },
+            // Example with multiple methods defined initially
+            { id: 'T007', name: 'First Coat Application', isSelected: true,
+              methods: [
+                  { name: 'Brush/Roll', rate: 200, isSelected: true }, // Default selected
+                  { name: 'Spray+Backbrush', rate: 250, isSelected: false }
+              ],
+              skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', factorsAffecting: 'Groove complexity, Paint viscosity', description: 'Apply first coat...' },
+            { id: 'T008', name: 'Light Sanding Between Coats', isSelected: true,
+              methods: [{ name: 'Hand/Sponge', rate: 325, isSelected: true }],
+              skillLevel: 'Medium', materialsRequired: '320-grit sandpaper, Sanding sponge', factorsAffecting: 'First coat smoothness, Env. conditions', description: 'Once first coat is dry...' },
+            { id: 'T009', name: 'Final Coat Application', isSelected: true,
+              methods: [
+                  { name: 'Brush/Roll', rate: 225, isSelected: true },
+                  { name: 'Spray+Backbrush', rate: 275, isSelected: false }
+              ],
+              skillLevel: 'Medium-High', materialsRequired: 'Premium latex paint, Brushes, Rollers', factorsAffecting: 'Groove complexity, Coverage needs', description: 'Apply final coat...' },
+            { id: 'T010', name: 'Post-Finish Inspection', isSelected: true,
+              methods: [{ name: 'Visual', rate: 475, isSelected: true }],
+              skillLevel: 'High', materialsRequired: 'Bright movable lighting', factorsAffecting: 'Lighting conditions, Quality standards', description: 'After final coat dried...' },
+            { id: 'T011', name: 'Final Touch-Up', isSelected: true,
+              methods: [{ name: 'Artist Brush/Feather', rate: 350, isSelected: true }],
+              skillLevel: 'High', materialsRequired: 'Touch-up kit, Artist brushes', factorsAffecting: 'Number of defects, Visibility', description: 'Address identified defects...' },
+            // Optional Tasks
+             { id: 'OPT01', name: 'Heavy Duty Cleaning', isSelected: false, methods: [{ name: 'Scrub/Rinse', rate: 175, isSelected: true }], skillLevel: 'Low', materialsRequired: 'Degreaser, Brushes, Water', factorsAffecting: 'Level of contamination', description: 'Extensive cleaning...' },
+             { id: 'OPT02', name: 'Full Surface Priming', isSelected: false, methods: [{ name: 'Brush/Roll', rate: 175, isSelected: true }], skillLevel: 'Medium', materialsRequired: 'Primer, Brushes, Rollers', factorsAffecting: 'Surface porosity, Stains', description: 'Apply primer to entire surface.' },
+             { id: 'OPT03', name: 'Extensive Masking', isSelected: false, methods: [{ name: 'Manual Tape/Sheet', rate: 125, isSelected: true }], skillLevel: 'Medium', materialsRequired: 'Tape, Plastic/Paper sheeting', factorsAffecting: 'Complexity of areas', description: 'Detailed masking...' },
         ],
         taskFactorSettings: {}
     };
@@ -204,107 +221,258 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTaskList() {
         taskListDiv.innerHTML = '';
         config.tasks.forEach(task => {
+            // --- Create Task Item Div ---
             const taskItemDiv = document.createElement('div');
-            taskItemDiv.classList.add('task-item');
-            taskItemDiv.id = `task-item-${task.id}`;
-            taskItemDiv.dataset.taskId = task.id; // Add task ID to main div
+            taskItemDiv.classList.add('task-item'); taskItemDiv.id = `task-item-${task.id}`; taskItemDiv.dataset.taskId = task.id;
 
-            // --- Main Controls Row ---
-            const controlsDiv = document.createElement('div');
-            controlsDiv.classList.add('task-main-controls');
+            // --- Main Controls Row (Checkbox, Name, Buttons) ---
+            const controlsDiv = document.createElement('div'); controlsDiv.classList.add('task-main-controls');
+             const checkbox = document.createElement('input'); /* ... (same as before) ... */
+             checkbox.type = 'checkbox'; checkbox.id = `task-${task.id}`; checkbox.value = task.id;
+             checkbox.checked = task.isSelected; checkbox.dataset.taskId = task.id;
+             checkbox.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).isSelected = e.target.checked; calculateTotals(); });
 
-            const checkbox = document.createElement('input'); // Selection Checkbox
-            checkbox.type = 'checkbox'; checkbox.id = `task-${task.id}`; checkbox.value = task.id;
-            checkbox.checked = task.isSelected; checkbox.dataset.taskId = task.id;
-            checkbox.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).isSelected = e.target.checked; calculateTotals(); });
+             const nameInput = document.createElement('input'); /* ... (same as before) ... */
+             nameInput.type = 'text'; nameInput.classList.add('task-name-input');
+             nameInput.value = task.name; nameInput.dataset.taskId = task.id;
+             nameInput.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).name = e.target.value; });
 
-            const nameInput = document.createElement('input'); // Editable Task Name
-            nameInput.type = 'text'; nameInput.classList.add('task-name-input');
-            nameInput.value = task.name; nameInput.dataset.taskId = task.id;
-            nameInput.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).name = e.target.value; });
+             const editFactorsBtn = document.createElement('button'); /* ... (same as before) ... */
+             editFactorsBtn.textContent = 'Edit Factors'; editFactorsBtn.classList.add('edit-factors-btn');
+             editFactorsBtn.dataset.taskId = task.id; editFactorsBtn.addEventListener('click', toggleFactorEditPanel);
 
-            const editFactorsBtn = document.createElement('button'); // Edit Factors Button
-            editFactorsBtn.textContent = 'Edit Factors'; editFactorsBtn.classList.add('edit-factors-btn');
-            editFactorsBtn.dataset.taskId = task.id; editFactorsBtn.addEventListener('click', toggleFactorEditPanel);
+             const deleteBtn = document.createElement('button'); /* ... (same as before) ... */
+             deleteBtn.textContent = 'Delete Task'; deleteBtn.classList.add('delete-task-btn');
+             deleteBtn.dataset.taskId = task.id; deleteBtn.addEventListener('click', handleDeleteTask);
 
-            const deleteBtn = document.createElement('button'); // Delete Task Button
-            deleteBtn.textContent = 'Delete Task'; deleteBtn.classList.add('delete-task-btn');
-            deleteBtn.dataset.taskId = task.id; deleteBtn.addEventListener('click', handleDeleteTask);
+             controlsDiv.appendChild(checkbox); controlsDiv.appendChild(nameInput);
+             controlsDiv.appendChild(editFactorsBtn); controlsDiv.appendChild(deleteBtn);
+             taskItemDiv.appendChild(controlsDiv);
 
-            controlsDiv.appendChild(checkbox); controlsDiv.appendChild(nameInput);
-            controlsDiv.appendChild(editFactorsBtn); controlsDiv.appendChild(deleteBtn);
-            taskItemDiv.appendChild(controlsDiv);
-
-            // --- Details Grid ---
-            const detailsGridDiv = document.createElement('div');
-            detailsGridDiv.classList.add('task-details-grid');
-
-            // Helper function to create grid rows
-            const createGridRow = (label, element) => {
-                 const div = document.createElement('div'); // Wrapper for grid participation
-                 const lbl = document.createElement('label');
-                 lbl.textContent = label;
-                 div.appendChild(lbl);
-                 div.appendChild(element);
-                 detailsGridDiv.appendChild(div);
+            // --- Details Grid (Rate Removed) ---
+            const detailsGridDiv = document.createElement('div'); detailsGridDiv.classList.add('task-details-grid');
+            const createGridRow = (label, element) => { /* ... (same helper function as before) ... */
+                const div = document.createElement('div');
+                const lbl = document.createElement('label'); lbl.textContent = label;
+                div.appendChild(lbl); div.appendChild(element); detailsGridDiv.appendChild(div);
             };
+            // Skill Level, Materials, Methods, Affecting, Description inputs (NO RATE INPUT HERE)
+            const skillInput = document.createElement('input'); /* ... (same as before) ... */
+             skillInput.type = 'text'; skillInput.classList.add('task-skill-input');
+             skillInput.value = task.skillLevel || ''; skillInput.dataset.taskId = task.id;
+             skillInput.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).skillLevel = e.target.value; });
+             createGridRow('Skill Level:', skillInput);
 
-            // Rate
-            const rateInput = document.createElement('input');
-            rateInput.type = 'number'; rateInput.classList.add('task-rate-input');
-            rateInput.id = `rate-${task.id}`; rateInput.value = task.baseRate;
-            rateInput.min = "1"; rateInput.step = "1"; rateInput.dataset.taskId = task.id;
-            rateInput.addEventListener('input', (e) => { config.tasks.find(t=>t.id===task.id).baseRate = parseFloat(e.target.value) || 1; calculateTotals(); });
-            createGridRow('Base Rate (SF/HR):', rateInput);
+             const materialsTextarea = document.createElement('textarea'); /* ... (same as before) ... */
+             materialsTextarea.classList.add('task-materials-input'); materialsTextarea.rows = 2;
+             materialsTextarea.value = task.materialsRequired || ''; materialsTextarea.dataset.taskId = task.id;
+             materialsTextarea.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).materialsRequired = e.target.value; });
+             createGridRow('Materials Required:', materialsTextarea);
 
-            // Skill Level
-            const skillInput = document.createElement('input');
-            skillInput.type = 'text'; skillInput.classList.add('task-skill-input');
-            skillInput.value = task.skillLevel || ''; skillInput.dataset.taskId = task.id;
-            skillInput.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).skillLevel = e.target.value; });
-            createGridRow('Skill Level:', skillInput);
+             // Note: 'Application Methods' grid row is removed as it's handled separately now.
 
-            // Materials
-            const materialsTextarea = document.createElement('textarea');
-            materialsTextarea.classList.add('task-materials-input'); materialsTextarea.rows = 2;
-            materialsTextarea.value = task.materialsRequired || ''; materialsTextarea.dataset.taskId = task.id;
-            materialsTextarea.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).materialsRequired = e.target.value; });
-            createGridRow('Materials Required:', materialsTextarea);
+             const affectingTextarea = document.createElement('textarea'); /* ... (same as before) ... */
+             affectingTextarea.classList.add('task-affecting-input'); affectingTextarea.rows = 2;
+             affectingTextarea.value = task.factorsAffecting || ''; affectingTextarea.dataset.taskId = task.id;
+             affectingTextarea.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).factorsAffecting = e.target.value; });
+             createGridRow('Factors Affecting:', affectingTextarea);
 
-            // Application Methods
-            const methodsTextarea = document.createElement('textarea');
-            methodsTextarea.classList.add('task-methods-input'); methodsTextarea.rows = 2;
-            methodsTextarea.value = task.applicationMethods || ''; methodsTextarea.dataset.taskId = task.id;
-            methodsTextarea.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).applicationMethods = e.target.value; });
-            createGridRow('Application Methods:', methodsTextarea);
-
-            // Factors Affecting
-            const affectingTextarea = document.createElement('textarea');
-            affectingTextarea.classList.add('task-affecting-input'); affectingTextarea.rows = 2;
-            affectingTextarea.value = task.factorsAffecting || ''; affectingTextarea.dataset.taskId = task.id;
-            affectingTextarea.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).factorsAffecting = e.target.value; });
-            createGridRow('Factors Affecting:', affectingTextarea);
-
-             // Description
-             const descriptionTextarea = document.createElement('textarea');
+             const descriptionTextarea = document.createElement('textarea'); /* ... (same as before) ... */
              descriptionTextarea.classList.add('task-description-input'); descriptionTextarea.rows = 3;
              descriptionTextarea.value = task.description || ''; descriptionTextarea.dataset.taskId = task.id;
              descriptionTextarea.addEventListener('change', (e) => { config.tasks.find(t=>t.id===task.id).description = e.target.value; });
              createGridRow('Description:', descriptionTextarea);
 
-
             taskItemDiv.appendChild(detailsGridDiv);
 
-            // --- Factor Editor Panel Placeholder ---
-            const factorEditPanel = document.createElement('div');
-            factorEditPanel.classList.add('factor-edit-panel');
-            factorEditPanel.id = `factor-edit-panel-${task.id}`;
-            factorEditPanel.style.display = 'none';
-            taskItemDiv.appendChild(factorEditPanel);
+            // --- Application Methods Section ---
+            const methodsSectionDiv = document.createElement('div');
+            methodsSectionDiv.classList.add('task-methods-section');
 
-            // Append the complete task item to the list
+            const methodsHeader = document.createElement('h4');
+            methodsHeader.textContent = 'Application Methods & Rates';
+            methodsSectionDiv.appendChild(methodsHeader);
+
+            const methodsListDiv = document.createElement('div');
+            methodsListDiv.classList.add('task-methods-list');
+            methodsListDiv.id = `methods-list-${task.id}`;
+            renderTaskMethods(task.id, methodsListDiv); // Populate methods
+            methodsSectionDiv.appendChild(methodsListDiv);
+
+            const addMethodBtn = document.createElement('button');
+            addMethodBtn.textContent = '+ Add Method';
+            addMethodBtn.classList.add('add-method-btn');
+            addMethodBtn.dataset.taskId = task.id;
+            addMethodBtn.addEventListener('click', handleAddMethod);
+            methodsSectionDiv.appendChild(addMethodBtn);
+
+            taskItemDiv.appendChild(methodsSectionDiv);
+
+            // --- Factor Editor Panel Placeholder ---
+            const factorEditPanel = document.createElement('div'); /* ... (same as before) ... */
+             factorEditPanel.classList.add('factor-edit-panel'); factorEditPanel.id = `factor-edit-panel-${task.id}`;
+             factorEditPanel.style.display = 'none';
+             taskItemDiv.appendChild(factorEditPanel);
+
+            // Append Task Item
             taskListDiv.appendChild(taskItemDiv);
         });
+    }
+
+    // NEW: Render the list of methods for a specific task
+    function renderTaskMethods(taskId, containerElement) {
+        containerElement.innerHTML = ''; // Clear existing methods
+        const task = config.tasks.find(t => t.id === taskId);
+        if (!task || !task.methods) return;
+
+        // Ensure at least one method is selected if possible
+        if (!task.methods.some(m => m.isSelected) && task.methods.length > 0) {
+            task.methods[0].isSelected = true; // Default select the first one
+        }
+
+        task.methods.forEach((method, index) => {
+            const methodItemDiv = document.createElement('div');
+            methodItemDiv.classList.add('method-item');
+            methodItemDiv.dataset.taskId = taskId;
+            methodItemDiv.dataset.methodIndex = index; // Store index
+
+            // Radio Button for selection
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `method-select-${taskId}`; // Group radios per task
+            radio.id = `method-${taskId}-${index}`;
+            radio.value = index; // Use index as value
+            radio.checked = method.isSelected;
+            radio.dataset.taskId = taskId;
+            radio.dataset.methodIndex = index;
+            radio.addEventListener('change', handleMethodSelectionChange);
+
+            // Method Name Input
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.classList.add('method-name-input');
+            nameInput.value = method.name;
+            nameInput.dataset.taskId = taskId;
+            nameInput.dataset.methodIndex = index;
+            nameInput.addEventListener('change', handleMethodNameChange);
+
+            // Method Rate Input
+            const rateInput = document.createElement('input');
+            rateInput.type = 'number';
+            rateInput.classList.add('method-rate-input');
+            rateInput.value = method.rate;
+            rateInput.min = "1"; rateInput.step = "1";
+            rateInput.dataset.taskId = taskId;
+            rateInput.dataset.methodIndex = index;
+            rateInput.addEventListener('input', handleMethodRateChange);
+
+            const rateUnitSpan = document.createElement('span');
+            rateUnitSpan.textContent = 'SF/HR';
+
+            // Delete Method Button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.classList.add('delete-method-btn');
+            deleteBtn.dataset.taskId = taskId;
+            deleteBtn.dataset.methodIndex = index;
+            deleteBtn.addEventListener('click', handleDeleteMethod);
+            // Disable delete if it's the last method
+            deleteBtn.disabled = task.methods.length <= 1;
+
+            methodItemDiv.appendChild(radio);
+            methodItemDiv.appendChild(nameInput);
+            methodItemDiv.appendChild(rateInput);
+            methodItemDiv.appendChild(rateUnitSpan);
+            methodItemDiv.appendChild(deleteBtn);
+            containerElement.appendChild(methodItemDiv);
+        });
+    }
+
+    // --- Event Handlers for Methods ---
+    function handleMethodSelectionChange(event) {
+        const radio = event.target;
+        const taskId = radio.dataset.taskId;
+        const selectedIndex = parseInt(radio.dataset.methodIndex, 10);
+        const task = config.tasks.find(t => t.id === taskId);
+        if (!task || !task.methods) return;
+
+        task.methods.forEach((method, index) => {
+            method.isSelected = (index === selectedIndex);
+        });
+        calculateTotals(); // Recalculate as the rate source changed
+    }
+
+    function handleMethodNameChange(event) {
+        const input = event.target;
+        const taskId = input.dataset.taskId;
+        const index = parseInt(input.dataset.methodIndex, 10);
+        const task = config.tasks.find(t => t.id === taskId);
+        if (task && task.methods && task.methods[index]) {
+            task.methods[index].name = input.value;
+            // No recalculation needed for name change
+        }
+    }
+
+    function handleMethodRateChange(event) {
+        const input = event.target;
+        const taskId = input.dataset.taskId;
+        const index = parseInt(input.dataset.methodIndex, 10);
+        const task = config.tasks.find(t => t.id === taskId);
+        if (task && task.methods && task.methods[index]) {
+            task.methods[index].rate = parseFloat(input.value) || 1; // Update rate in config
+            calculateTotals(); // Rate changed, recalculate
+        }
+    }
+
+     function handleAddMethod(event) {
+          const taskId = event.target.dataset.taskId;
+          const task = config.tasks.find(t => t.id === taskId);
+          if (!task) return;
+
+          if (!task.methods) task.methods = []; // Ensure array exists
+
+          const newMethod = {
+              name: 'New Method',
+              rate: 50, // Default rate
+              isSelected: task.methods.length === 0 // Select if it's the first one being added
+          };
+          task.methods.push(newMethod);
+
+          // Re-render only the methods list for this task
+          const methodsListDiv = document.getElementById(`methods-list-${taskId}`);
+          if (methodsListDiv) {
+              renderTaskMethods(taskId, methodsListDiv);
+          }
+          calculateTotals(); // Recalculate as available methods changed
+     }
+
+    function handleDeleteMethod(event) {
+        const button = event.target;
+        const taskId = button.dataset.taskId;
+        const indexToRemove = parseInt(button.dataset.methodIndex, 10);
+        const task = config.tasks.find(t => t.id === taskId);
+
+        if (!task || !task.methods || task.methods.length <= 1) {
+             alert("Cannot delete the last application method for a task.");
+             return; // Don't allow deleting the last method
+        }
+
+        const wasSelected = task.methods[indexToRemove].isSelected;
+
+        // Remove the method
+        task.methods.splice(indexToRemove, 1);
+
+        // If the deleted method was selected, select the first one now
+        if (wasSelected && task.methods.length > 0) {
+            task.methods[0].isSelected = true;
+        }
+
+        // Re-render the methods list for this task
+        const methodsListDiv = document.getElementById(`methods-list-${taskId}`);
+        if (methodsListDiv) {
+            renderTaskMethods(taskId, methodsListDiv);
+        }
+        calculateTotals(); // Recalculate
     }
 
     function handleDeleteTask(event) {
@@ -323,23 +491,19 @@ document.addEventListener('DOMContentLoaded', () => {
          calculateTotals();
     }
 
-     // --- Add New Task Logic (UPDATED) ---
+    // --- Add New Task Logic (UPDATED for methods) ---
      addTaskBtn.addEventListener('click', () => {
           const newTask = {
               id: generateUniqueId('T'),
               name: 'New Task - Edit Name',
-              baseRate: 100,
               isSelected: true,
-              // Add defaults for new fields
-              skillLevel: 'Medium',
-              materialsRequired: '',
-              applicationMethods: '',
-              factorsAffecting: '',
-              description: ''
+              methods: [{ name: 'Default Method', rate: 100, isSelected: true }], // Initialize with one method
+              skillLevel: 'Medium', materialsRequired: '', 
+              factorsAffecting: '', description: ''
           };
           config.tasks.push(newTask);
           initializeTaskFactorSettings();
-          renderTaskList(); // Re-render
+          renderTaskList();
           document.getElementById(`task-item-${newTask.id}`)?.scrollIntoView({behavior: "smooth"});
           calculateTotals();
      });
@@ -440,25 +604,31 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateTotals();
     }
 
-    // --- Core Calculation Logic (No changes needed) ---
+    // --- Core Calculation Logic (UPDATED) ---
     function calculateTotals() {
         const projectArea = parseFloat(projectAreaInput.value) || 0;
         const laborRate = parseFloat(laborRateInput.value) || 0;
         let totalAdjustedTimePerSf = 0;
 
         config.tasks.forEach(task => {
-            if (!task.isSelected) return; // Skip unselected tasks based on config data
+            if (!task.isSelected || !task.methods || task.methods.length === 0) return; // Skip unselected or method-less tasks
 
-            // Get base rate directly from config data
-            let currentRate = parseFloat(task.baseRate) || 1;
+            // Find the SELECTED method for this task
+            let selectedMethod = task.methods.find(m => m.isSelected);
+            // Fallback: if none selected (shouldn't happen with render logic), use the first one
+            if (!selectedMethod) {
+                 selectedMethod = task.methods[0];
+                 // console.warn(`Task ${task.id} had no selected method, using first.`);
+            }
+
+            let currentRate = parseFloat(selectedMethod.rate) || 1; // Use selected method's rate
             if (currentRate <= 0) currentRate = 1;
-            const baseTimePerSf = 1 / currentRate;
+            const baseTimePerSf = 1 / currentRate; // Base time comes from selected method
 
             let effectiveMultiplier = 1;
             if (config.taskFactorSettings[task.id]) {
                 Object.keys(config.taskFactorSettings[task.id]).forEach(factorId => {
                     const setting = config.taskFactorSettings[task.id][factorId];
-                     // Ensure factor still exists globally before applying
                     if (setting.applied && config.globalFactors.some(f => f.id === factorId)) {
                         effectiveMultiplier *= setting.currentValue;
                     }
@@ -540,26 +710,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentConfig = buildConfigurationObject();
         const baseFileName = (currentConfig.sopName || 'sop_config').replace(/[^a-z0-9]/gi, '_').toLowerCase();
         try {
-            // 1. SOP Details CSV (Same)
+            // 1. SOP Details (Same)
             createAndDownloadCsv(`${baseFileName}_sop_details.csv`, ['SOP_Name', 'SOP_Description'], [[currentConfig.sopName, currentConfig.sopDescription]]);
+            // 2. Global Factors (Same)
+             createAndDownloadCsv(`${baseFileName}_global_factors.csv`, ['Factor_ID', 'Factor_Name', 'Multiplier_Range', 'Calculated_Avg_Multiplier'], currentConfig.globalFactors.map(f => [f.id, f.name, f.multiplierRange, f.avgMultiplier]));
 
-            // 2. Global Factors CSV (Same)
-            const factorHeaders = ['Factor_ID', 'Factor_Name', 'Multiplier_Range', 'Calculated_Avg_Multiplier'];
-            const factorData = currentConfig.globalFactors.map(f => [f.id, f.name, f.multiplierRange, f.avgMultiplier]);
-            createAndDownloadCsv(`${baseFileName}_global_factors.csv`, factorHeaders, factorData);
-
-            // 3. Tasks CSV (*** UPDATED WITH NEW COLUMNS ***)
-            const taskHeaders = [
-                'Task_ID', 'Task_Name', 'Is_Selected', 'Base_Rate_SFHR', 'Skill_Level',
-                'Materials_Required', 'Application_Methods', 'Factors_Affecting', 'Description'
-            ];
-            const taskData = currentConfig.tasks.map(t => [
-                t.id, t.name, t.isSelected, t.baseRate, t.skillLevel,
-                t.materialsRequired, t.applicationMethods, t.factorsAffecting, t.description
-            ]);
+            // 3. Tasks CSV (Rate removed, maybe remove other method details too)
+            const taskHeaders = ['Task_ID', 'Task_Name', 'Is_Selected', 'Skill_Level', 'Materials_Required', 'Factors_Affecting', 'Description'];
+            const taskData = currentConfig.tasks.map(t => [t.id, t.name, t.isSelected, t.skillLevel, t.materialsRequired, t.factorsAffecting, t.description]);
             createAndDownloadCsv(`${baseFileName}_tasks.csv`, taskHeaders, taskData);
 
-            // 4. Task-Factor Settings CSV (Same logic)
+            // *** NEW: 4. Task Methods CSV ***
+            const taskMethodsHeaders = ['Task_ID', 'Task_Name', 'Method_Name', 'Method_Rate_SFHR', 'Is_Selected_For_Calc'];
+            const taskMethodsData = [];
+             currentConfig.tasks.forEach(task => {
+                 if(task.methods) {
+                      task.methods.forEach(method => {
+                           taskMethodsData.push([task.id, task.name, method.name, method.rate, method.isSelected]);
+                      });
+                 }
+             });
+             createAndDownloadCsv(`${baseFileName}_task_methods.csv`, taskMethodsHeaders, taskMethodsData);
+
+
+            // 5. Task-Factor Settings CSV (Same logic as before)
             const taskFactorSettingsHeaders = ['Task_ID', 'Task_Name', 'Factor_ID', 'Factor_Name', 'Is_Applied', 'Task_Specific_Multiplier'];
             const taskFactorSettingsData = [];
             currentConfig.tasks.forEach(task => {
@@ -601,15 +775,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 // --- Post-Load Processing ---
                 config.globalFactors = processFactors(config.globalFactors); // Ensure avgMultiplier
 
-                // Ensure loaded tasks have ALL expected fields (add defaults if missing)
-                config.tasks = config.tasks.map(task => ({
-                     skillLevel: '', // Add defaults for all new fields
-                     materialsRequired: '',
-                     applicationMethods: '',
-                     factorsAffecting: '',
-                     description: '',
-                     ...task // Spread loaded task data over defaults
-                 }));
+                // Ensure loaded tasks have expected fields, INCLUDING methods array
+                config.tasks = config.tasks.map(task => {
+                     const defaultMethod = [{ name: 'Default Method', rate: task.baseRate || 100, isSelected: true }]; // Create default method if missing
+                     return {
+                         skillLevel: '', materialsRequired: '', factorsAffecting: '', description: '', // Defaults for other fields
+                         methods: [], // Default empty methods array
+                         ...task, // Spread loaded data
+                         methods: Array.isArray(task.methods) && task.methods.length > 0 ? task.methods : defaultMethod // Ensure methods exists, use default if empty/missing
+                     };
+                 });
+                 // Ensure exactly one method is selected per task after load
+                  config.tasks.forEach(task => {
+                       if (task.methods && task.methods.length > 0) {
+                            const selectedCount = task.methods.filter(m => m.isSelected).length;
+                            if (selectedCount !== 1) {
+                                 task.methods.forEach((m, i) => m.isSelected = (i === 0)); // Select first if none/multiple selected
+                            }
+                       }
+                  });
 
                 initializeTaskFactorSettings(); // Ensure consistency
 
@@ -640,14 +824,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     function initializeApp() {
+        // Ensure initial config tasks have the methods structure
+         config.tasks = config.tasks.map(task => ({
+             ...task,
+             methods: Array.isArray(task.methods) ? task.methods : [{ name: 'Default', rate: task.baseRate || 100, isSelected: true }]
+         }));
+         // Ensure exactly one method selected initially
+         config.tasks.forEach(task => { 
+             if (task.methods && task.methods.length > 0) {
+                 const selectedCount = task.methods.filter(m => m.isSelected).length;
+                 if (selectedCount !== 1) {
+                     task.methods.forEach((m, i) => m.isSelected = (i === 0)); // Select first if none/multiple selected
+                 }
+             }
+         });
+
         sopNameInput.value = config.sopName;
         sopDescriptionTextarea.value = config.sopDescription;
-        initializeTaskFactorSettings(); // Ensure initial structure is correct
+        initializeTaskFactorSettings();
         renderGlobalFactorList();
         renderTaskList();
         projectAreaInput.addEventListener('input', calculateTotals);
         laborRateInput.addEventListener('input', calculateTotals);
-        calculateTotals(); // Initial calculation
+        calculateTotals();
     }
 
     initializeApp(); // Run setup
