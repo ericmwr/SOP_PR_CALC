@@ -190,28 +190,80 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('global-factor-item');
             itemDiv.dataset.factorId = factor.id;
-
-            // Create main inputs container (name, range, delete button)
+            
+            // Create compact view (default view)
+            const compactViewDiv = document.createElement('div');
+            compactViewDiv.classList.add('factor-compact-view');
+            
+            const nameDisplay = document.createElement('div');
+            nameDisplay.classList.add('factor-name-display');
+            nameDisplay.textContent = factor.name;
+            
+            const rangeDisplay = document.createElement('div');
+            rangeDisplay.classList.add('factor-range-display');
+            rangeDisplay.textContent = factor.multiplierRange;
+            
+            const editBtn = document.createElement('button');
+            editBtn.textContent = 'Edit';
+            editBtn.classList.add('edit-factor-btn');
+            editBtn.addEventListener('click', () => handleEditFactor(factor.id));
+            
+            compactViewDiv.appendChild(nameDisplay);
+            compactViewDiv.appendChild(rangeDisplay);
+            compactViewDiv.appendChild(editBtn);
+            
+            // Add description preview if it exists
+            if (factor.description) {
+                const descPreview = document.createElement('div');
+                descPreview.classList.add('factor-description-preview');
+                descPreview.textContent = factor.description;
+                compactViewDiv.appendChild(descPreview);
+            }
+            
+            itemDiv.appendChild(compactViewDiv);
+            
+            // Create edit view (hidden by default)
+            const editViewDiv = document.createElement('div');
+            editViewDiv.classList.add('factor-edit-view');
+            
+            // Create main inputs container
             const mainInputsDiv = document.createElement('div');
             mainInputsDiv.classList.add('factor-main-inputs');
-
+            
             const nameInput = document.createElement('input');
-            nameInput.type = 'text'; nameInput.value = factor.name; nameInput.placeholder = 'Factor Name';
-            nameInput.addEventListener('change', (e) => handleGlobalFactorUpdate(factor.id, 'name', e.target.value));
-
+            nameInput.type = 'text';
+            nameInput.value = factor.name;
+            nameInput.placeholder = 'Factor Name';
+            nameInput.id = `factor-name-${factor.id}`;
+            
             const rangeInput = document.createElement('input');
-            rangeInput.type = 'text'; rangeInput.value = factor.multiplierRange; rangeInput.placeholder = 'Range (e.g., 0.8-1.2)';
-            rangeInput.addEventListener('change', (e) => handleGlobalFactorUpdate(factor.id, 'range', e.target.value));
-
+            rangeInput.type = 'text';
+            rangeInput.value = factor.multiplierRange;
+            rangeInput.placeholder = 'Range (e.g., 0.8-1.2)';
+            rangeInput.id = `factor-range-${factor.id}`;
+            
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Save';
+            saveBtn.classList.add('save-factor-btn');
+            saveBtn.addEventListener('click', () => handleSaveFactor(factor.id));
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.classList.add('cancel-edit-btn');
+            cancelBtn.addEventListener('click', () => handleCancelEdit(factor.id));
+            
             const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete'; deleteBtn.classList.add('delete-factor-btn');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.classList.add('delete-factor-btn');
             deleteBtn.addEventListener('click', () => handleDeleteFactor(factor.id));
-
+            
             mainInputsDiv.appendChild(nameInput);
             mainInputsDiv.appendChild(rangeInput);
+            mainInputsDiv.appendChild(saveBtn);
+            mainInputsDiv.appendChild(cancelBtn);
             mainInputsDiv.appendChild(deleteBtn);
-            itemDiv.appendChild(mainInputsDiv);
-
+            editViewDiv.appendChild(mainInputsDiv);
+            
             // Create description container and textarea
             const descriptionContainer = document.createElement('div');
             descriptionContainer.classList.add('factor-description-container');
@@ -220,13 +272,62 @@ document.addEventListener('DOMContentLoaded', () => {
             descriptionTextarea.classList.add('factor-description');
             descriptionTextarea.placeholder = 'Description of this factor and how it affects production rates...';
             descriptionTextarea.value = factor.description || '';
-            descriptionTextarea.addEventListener('change', (e) => handleGlobalFactorUpdate(factor.id, 'description', e.target.value));
+            descriptionTextarea.id = `factor-description-${factor.id}`;
             
             descriptionContainer.appendChild(descriptionTextarea);
-            itemDiv.appendChild(descriptionContainer);
-
+            editViewDiv.appendChild(descriptionContainer);
+            
+            itemDiv.appendChild(editViewDiv);
+            
             globalFactorListDiv.appendChild(itemDiv);
         });
+    }
+    
+    // New event handlers for edit mode
+    function handleEditFactor(factorId) {
+        const factorItem = document.querySelector(`.global-factor-item[data-factor-id="${factorId}"]`);
+        if (factorItem) {
+            factorItem.classList.add('editing');
+        }
+    }
+    
+    function handleSaveFactor(factorId) {
+        const nameInput = document.getElementById(`factor-name-${factorId}`);
+        const rangeInput = document.getElementById(`factor-range-${factorId}`);
+        const descriptionTextarea = document.getElementById(`factor-description-${factorId}`);
+        
+        if (nameInput && rangeInput && descriptionTextarea) {
+            const name = nameInput.value.trim();
+            const range = rangeInput.value.trim();
+            const description = descriptionTextarea.value.trim();
+            
+            if (!name || !range) {
+                alert('Please enter both name and range.');
+                return;
+            }
+            
+            // Update the factor
+            handleGlobalFactorUpdate(factorId, 'name', name);
+            handleGlobalFactorUpdate(factorId, 'range', range);
+            handleGlobalFactorUpdate(factorId, 'description', description);
+            
+            // Exit edit mode
+            const factorItem = document.querySelector(`.global-factor-item[data-factor-id="${factorId}"]`);
+            if (factorItem) {
+                factorItem.classList.remove('editing');
+            }
+            
+            // Re-render to update the compact view
+            renderGlobalFactorList();
+        }
+    }
+    
+    function handleCancelEdit(factorId) {
+        // Simply exit edit mode without saving changes
+        const factorItem = document.querySelector(`.global-factor-item[data-factor-id="${factorId}"]`);
+        if (factorItem) {
+            factorItem.classList.remove('editing');
+        }
     }
 
     function handleGlobalFactorUpdate(factorId, field, value) {
