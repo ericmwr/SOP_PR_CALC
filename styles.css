@@ -130,32 +130,46 @@ h4 { margin-top: 10px;}
 
 /* Compact View */
 .global-factor-item .factor-compact-view {
-    display: flex;
+    display: grid;
+    grid-template-columns: 180px 100px auto 80px;
+    grid-template-areas: 
+        "name range . edit"
+        "desc desc desc desc";
     align-items: center;
     width: 100%;
-    padding: 5px 0;
+    padding: 8px 0;
+    column-gap: 15px;
 }
 .global-factor-item .factor-name-display {
+    grid-area: name;
     font-weight: bold;
-    margin-right: 15px;
-    flex-grow: 1;
+    font-size: 1em;
 }
 .global-factor-item .factor-range-display {
+    grid-area: range;
     color: #666;
-    margin-right: 15px;
     font-size: 0.9em;
+    text-align: center;
+    background-color: #f5f5f5;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid #eee;
+}
+.global-factor-item .edit-factor-btn {
+    grid-area: edit;
+    justify-self: end;
+    margin-right: 5px;
 }
 .global-factor-item .factor-description-preview {
+    grid-area: desc;
     color: #777;
     font-style: italic;
     font-size: 0.9em;
-    margin-top: 3px;
-    margin-left: 20px;
+    margin-top: 8px;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: calc(100% - 20px);
 }
 
 /* Edit View */
