@@ -33,7 +33,7 @@ body {
 /* --- Layout Wrapper --- */
 .app-wrapper {
     display: grid;
-    grid-template-columns: 320px 1fr 280px; /* Left sidebar, main content, right sidebar */
+    grid-template-columns: 380px 1fr 280px; /* Increased left sidebar width from 320px to 380px */
     grid-gap: 20px;
     margin: 0 auto; /* Center */
     max-width: 1400px; /* Overall max-width */
@@ -128,6 +128,17 @@ body {
 .sop-header input[type="text"],
 .sop-header textarea {
     width: calc(100% - 130px); /* Wider for text content */
+    min-width: 180px; /* Ensure minimum width */
+}
+
+/* Increase the left sidebar width to accommodate wider inputs */
+.app-wrapper {
+    grid-template-columns: 380px 1fr 280px; /* Increased left sidebar width from 320px to 380px */
+}
+
+/* Adjust main content padding to match new sidebar width */
+.main-content {
+    padding-left: 500px; /* Increased from 440px to match wider sidebar */
 }
 
 /* Specific styling for Project Details inputs */
