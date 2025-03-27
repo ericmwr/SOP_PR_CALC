@@ -98,34 +98,75 @@ document.addEventListener('DOMContentLoaded', () => {
          return prefix + Date.now() + Math.random().toString(16).substring(2, 8);
     }
 
+    // NEW: Helper to parse range string like "0.7-0.9" or "1.1"
+    function parseRangeString(rangeString, defaultMin = 0.5, defaultMax = 1.5) {
+        let min = defaultMin;
+        let max = defaultMax;
+        try {
+            if (rangeString && typeof rangeString === 'string') {
+                const parts = rangeString.split('-').map(Number);
+                if (parts.length === 2 && !parts.some(isNaN)) {
+                    min = Math.min(parts[0], parts[1]);
+                    max = Math.max(parts[0], parts[1]);
+                } else if (parts.length === 1 && !isNaN(parts[0])) {
+                    // If single value, use it as both min/max or center defaults around it?
+                    // Let's center defaults around it, allowing some adjustment
+                    min = Math.max(0.1, parts[0] - 0.5); // Ensure min >= 0.1
+                    max = parts[0] + 0.5;
+                }
+                 // Ensure min is not greater than max after parsing
+                 if (min > max) [min, max] = [max, min]; // Swap if needed
+            }
+        } catch (e) { console.warn("Could not parse range string:", rangeString); }
+        // Ensure reasonable bounds after parsing/defaults
+        min = Math.max(0.1, min); // Absolute minimum
+        max = Math.max(min + 0.01, max); // Ensure max is at least slightly > min
+        return { min, max };
+    }
+
     // Function to ensure avgMultiplier is present on factors
     function processFactors(factorArray) {
-        return factorArray.map(f => ({
-            ...f,
-            avgMultiplier: calculateAverageMultiplier(f.multiplierRange)
-        }));
+        return factorArray.map(f => {
+             const range = parseRangeString(f.multiplierRange); // Use helper
+             return {
+                ...f,
+                // Calculate average based on potentially corrected min/max
+                avgMultiplier: (range.min + range.max) / 2
+            };
+        });
     }
 
     // Ensure initial factors have avgMultiplier
     config.globalFactors = processFactors(config.globalFactors);
 
-    // Function to initialize task factor settings if missing
+    // UPDATED: Initialize Task Factor Settings
     function initializeTaskFactorSettings() {
         config.tasks.forEach(task => {
             if (!config.taskFactorSettings[task.id]) {
                 config.taskFactorSettings[task.id] = {};
             }
             config.globalFactors.forEach(factor => {
-                if (!config.taskFactorSettings[task.id][factor.id]) {
+                // Check if settings for this factor/task *already exist* (e.g., from loaded data)
+                const existingSetting = config.taskFactorSettings[task.id][factor.id];
+
+                if (!existingSetting) {
+                    // Initialize NEW setting
+                    const range = parseRangeString(factor.multiplierRange);
                     config.taskFactorSettings[task.id][factor.id] = {
-                        applied: false, // Default to not applied unless loading a config
-                        currentValue: factor.avgMultiplier
+                        applied: false,
+                        currentValue: factor.avgMultiplier,
+                        min: range.min,
+                        max: range.max
                     };
+                } else {
+                    // Ensure existing settings have all properties (backward compatibility)
+                    const range = parseRangeString(factor.multiplierRange); // Get current global range defaults
+                     if (existingSetting.min === undefined) existingSetting.min = range.min;
+                     if (existingSetting.max === undefined) existingSetting.max = range.max;
+                     if (existingSetting.currentValue === undefined) existingSetting.currentValue = factor.avgMultiplier;
+                     // Clamp existing value if it's outside the min/max bounds (could happen if global range changed)
+                     existingSetting.currentValue = Math.max(existingSetting.min, Math.min(existingSetting.max, existingSetting.currentValue));
                 }
-                 // Ensure existing settings have currentValue if it was missing
-                 if(config.taskFactorSettings[task.id][factor.id].currentValue === undefined) {
-                    config.taskFactorSettings[task.id][factor.id].currentValue = factor.avgMultiplier;
-                 }
             });
         });
          // Clean up settings for factors/tasks that no longer exist (optional but good practice)
@@ -531,68 +572,87 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function renderTaskFactorEditor(taskId, panelElement) {
-        // console.log(`[renderTaskFactorEditor] Task ${taskId}: Starting render.`); // DEBUG LOG REMOVED
         panelElement.innerHTML = ''; // Clear previous content
-        // Ensure entry exists in global settings
-        if (!config.taskFactorSettings[taskId]) {
-            // console.log(`[renderTaskFactorEditor] Task ${taskId}: config.taskFactorSettings[taskId] is undefined, initializing.`); // DEBUG LOG REMOVED
-            config.taskFactorSettings[taskId] = {};
-        } else {
-            // console.log(`[renderTaskFactorEditor] Task ${taskId}: config.taskFactorSettings[taskId] exists.`); // DEBUG LOG REMOVED
-        }
+        if (!config.taskFactorSettings[taskId]) config.taskFactorSettings[taskId] = {};
 
-        // console.log(`[renderTaskFactorEditor] Task ${taskId}: config.globalFactors.length = ${config.globalFactors.length}`); // DEBUG LOG REMOVED
         config.globalFactors.forEach(factor => {
-            // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id} (${factor.name}): Processing factor.`); // DEBUG LOG REMOVED
-            // Initialize task-specific settings for this factor if they don't exist IN THE GLOBAL STORE
             if (!config.taskFactorSettings[taskId][factor.id]) {
-                // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: config.taskFactorSettings[taskId][factor.id] is undefined, initializing.`); // DEBUG LOG REMOVED
-                config.taskFactorSettings[taskId][factor.id] = {
-                    applied: false, currentValue: factor.avgMultiplier
-                };
+                initializeTaskFactorSettings(); // Should have been called, but double-check
             }
             const factorSetting = config.taskFactorSettings[taskId][factor.id];
-            if (!factorSetting) {
-                console.error(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: factorSetting is unexpectedly undefined! Skipping.`); // Keep this error log
-                return; // Skip this factor
-            } else {
-                 // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: factorSetting found:`, JSON.stringify(factorSetting)); // DEBUG LOG REMOVED
-            }
+             if (!factorSetting) { console.error(`Setting missing for ${taskId}/${factor.id}`); return; }
+
 
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('factor-edit-item');
             itemDiv.dataset.factorId = factor.id; itemDiv.dataset.taskId = taskId;
 
+            // Apply Checkbox
             const applyCheckbox = document.createElement('input');
             applyCheckbox.type = 'checkbox'; applyCheckbox.id = `apply-${taskId}-${factor.id}`;
-            applyCheckbox.checked = factorSetting.applied; // Read from settings
+            applyCheckbox.checked = factorSetting.applied;
             applyCheckbox.dataset.taskId = taskId; applyCheckbox.dataset.factorId = factor.id;
             applyCheckbox.addEventListener('change', handleApplyFactorChange);
 
+            // Factor Name Label
             const nameLabel = document.createElement('label');
             nameLabel.classList.add('factor-name-label'); nameLabel.htmlFor = applyCheckbox.id;
             nameLabel.textContent = factor.name; nameLabel.dataset.factorId = factor.id;
 
+            // Global Range Display
             const rangeDisplay = document.createElement('span');
             rangeDisplay.classList.add('global-range-display');
             rangeDisplay.textContent = `(${factor.multiplierRange})`; rangeDisplay.dataset.factorId = factor.id;
 
+            // --- Slider Group ---
+            const sliderGroupDiv = document.createElement('div');
+            sliderGroupDiv.classList.add('factor-slider-group');
+
+            // Min Input
+            const minInput = document.createElement('input');
+            minInput.type = 'number'; minInput.classList.add('range-input'); minInput.id = `min-${taskId}-${factor.id}`;
+            minInput.value = factorSetting.min.toFixed(2); minInput.step = "0.01"; minInput.min="0.1"; // Practical min
+            minInput.dataset.taskId = taskId; minInput.dataset.factorId = factor.id; minInput.dataset.bound = "min"; // Identify as min input
+            minInput.disabled = !factorSetting.applied;
+            minInput.addEventListener('change', handleRangeInputChange); // Use change to avoid firing too often
+
+            // Slider
             const slider = document.createElement('input');
             slider.type = 'range'; slider.id = `slider-${taskId}-${factor.id}`;
-            slider.min = "0.5"; slider.max = "1.5"; slider.step = "0.01";
-            slider.value = factorSetting.currentValue; // Read from settings
+            slider.min = factorSetting.min; slider.max = factorSetting.max; slider.step = "0.01";
+            // Ensure current value is within current min/max before setting
+            slider.value = Math.max(factorSetting.min, Math.min(factorSetting.max, factorSetting.currentValue));
+            factorSetting.currentValue = parseFloat(slider.value); // Update config if clamped
             slider.dataset.taskId = taskId; slider.dataset.factorId = factor.id;
             slider.disabled = !factorSetting.applied;
             slider.addEventListener('input', handleFactorSliderChange);
 
+            // Max Input
+            const maxInput = document.createElement('input');
+            maxInput.type = 'number'; maxInput.classList.add('range-input'); maxInput.id = `max-${taskId}-${factor.id}`;
+            maxInput.value = factorSetting.max.toFixed(2); maxInput.step = "0.01"; maxInput.min="0.11"; // Min for max input
+            maxInput.dataset.taskId = taskId; maxInput.dataset.factorId = factor.id; maxInput.dataset.bound = "max"; // Identify as max input
+            maxInput.disabled = !factorSetting.applied;
+            maxInput.addEventListener('change', handleRangeInputChange);
+
+            // Value Span
             const valueSpan = document.createElement('span');
             valueSpan.classList.add('factor-value'); valueSpan.id = `value-${taskId}-${factor.id}`;
             valueSpan.textContent = parseFloat(slider.value).toFixed(2);
 
-            itemDiv.appendChild(applyCheckbox); itemDiv.appendChild(nameLabel); itemDiv.appendChild(rangeDisplay);
-            itemDiv.appendChild(slider); itemDiv.appendChild(valueSpan);
+            // Append to Slider Group
+            sliderGroupDiv.appendChild(minInput);
+            sliderGroupDiv.appendChild(slider);
+            sliderGroupDiv.appendChild(maxInput);
+            sliderGroupDiv.appendChild(valueSpan);
+
+            // Append all parts to itemDiv
+            itemDiv.appendChild(applyCheckbox);
+            itemDiv.appendChild(nameLabel);
+            itemDiv.appendChild(rangeDisplay);
+            itemDiv.appendChild(sliderGroupDiv); // Add the group
+
             panelElement.appendChild(itemDiv);
-            // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: Appended factor item to panel.`); // DEBUG LOG REMOVED
         });
          const closeBtn = document.createElement('button');
          closeBtn.textContent = 'Done Editing Factors';
@@ -603,18 +663,75 @@ document.addEventListener('DOMContentLoaded', () => {
               if(editBtn) editBtn.textContent = 'Edit Factors';
          };
          panelElement.appendChild(closeBtn);
-         // console.log(`[renderTaskFactorEditor] Task ${taskId}: Finished render, panel content:`, panelElement.innerHTML.substring(0, 200) + '...'); // DEBUG LOG REMOVED
     }
 
     function handleApplyFactorChange(event) {
         const checkbox = event.target;
         const taskId = checkbox.dataset.taskId;
         const factorId = checkbox.dataset.factorId;
+        const minInput = document.getElementById(`min-${taskId}-${factorId}`);
+        const maxInput = document.getElementById(`max-${taskId}-${factorId}`);
         const slider = document.getElementById(`slider-${taskId}-${factorId}`);
+
         if (!config.taskFactorSettings[taskId]?.[factorId]) return;
-        config.taskFactorSettings[taskId][factorId].applied = checkbox.checked;
-        if (slider) slider.disabled = !checkbox.checked;
+        const isApplied = checkbox.checked;
+        config.taskFactorSettings[taskId][factorId].applied = isApplied;
+
+        // Enable/disable range inputs and slider
+        if (minInput) minInput.disabled = !isApplied;
+        if (maxInput) maxInput.disabled = !isApplied;
+        if (slider) slider.disabled = !isApplied;
+
         calculateTotals();
+    }
+
+    // NEW: Handle Min/Max Range Input Changes
+    function handleRangeInputChange(event) {
+         const input = event.target;
+         const taskId = input.dataset.taskId;
+         const factorId = input.dataset.factorId;
+         const bound = input.dataset.bound; // 'min' or 'max'
+         let newValue = parseFloat(input.value) || (bound === 'min' ? 0.1 : 1.0); // Default if invalid
+
+         const setting = config.taskFactorSettings[taskId]?.[factorId];
+         if (!setting) return;
+
+         const slider = document.getElementById(`slider-${taskId}-${factorId}`);
+         const minInput = document.getElementById(`min-${taskId}-${factorId}`);
+         const maxInput = document.getElementById(`max-${taskId}-${factorId}`);
+         const valueSpan = document.getElementById(`value-${taskId}-${factorId}`);
+
+         if (bound === 'min') {
+             newValue = Math.max(0.1, newValue); // Enforce absolute minimum
+             // Ensure min doesn't exceed current max
+             newValue = Math.min(newValue, setting.max - 0.01);
+             setting.min = newValue;
+             if(slider) slider.min = newValue;
+             input.value = newValue.toFixed(2); // Update input field if adjusted
+             if(maxInput) maxInput.min = (newValue + 0.01).toFixed(2); // Update counterpart's min attribute
+         } else { // bound === 'max'
+             // Ensure max is greater than current min
+             newValue = Math.max(newValue, setting.min + 0.01);
+             setting.max = newValue;
+             if(slider) slider.max = newValue;
+             input.value = newValue.toFixed(2); // Update input field if adjusted
+             if(minInput) minInput.max = (newValue - 0.01).toFixed(2); // Update counterpart's max attribute
+         }
+
+         // Clamp current slider value if it's now outside the new bounds
+         if (slider) {
+             let currentSliderValue = parseFloat(slider.value);
+             if (currentSliderValue < setting.min) {
+                 slider.value = setting.min;
+             } else if (currentSliderValue > setting.max) {
+                 slider.value = setting.max;
+             }
+             // Update config and display span with potentially clamped value
+             setting.currentValue = parseFloat(slider.value);
+             if (valueSpan) valueSpan.textContent = setting.currentValue.toFixed(2);
+         }
+
+         calculateTotals(); // Recalculate as range change might affect effective value
     }
 
     function handleFactorSliderChange(event) {
@@ -622,11 +739,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskId = slider.dataset.taskId;
         const factorId = slider.dataset.factorId;
         const valueSpan = document.getElementById(`value-${taskId}-${factorId}`);
+
         if (!config.taskFactorSettings[taskId]?.[factorId]) return;
+
         const newValue = parseFloat(slider.value);
-        config.taskFactorSettings[taskId][factorId].currentValue = newValue;
-        if (valueSpan) valueSpan.textContent = newValue.toFixed(2);
-        calculateTotals();
+        config.taskFactorSettings[taskId][factorId].currentValue = newValue; // Update config
+        if (valueSpan) {
+            valueSpan.textContent = newValue.toFixed(2); // Update display
+        }
+        calculateTotals(); // Recalculate with new value
     }
 
     // --- Core Calculation Logic (UPDATED) ---
@@ -759,16 +880,22 @@ document.addEventListener('DOMContentLoaded', () => {
              createAndDownloadCsv(`${baseFileName}_task_methods.csv`, taskMethodsHeaders, taskMethodsData);
 
 
-            // 5. Task-Factor Settings CSV (Same logic as before)
-            const taskFactorSettingsHeaders = ['Task_ID', 'Task_Name', 'Factor_ID', 'Factor_Name', 'Is_Applied', 'Task_Specific_Multiplier'];
+            // 5. Task-Factor Settings CSV (*** UPDATED WITH NEW COLUMNS ***)
+            const taskFactorSettingsHeaders = [
+                'Task_ID', 'Task_Name', 'Factor_ID', 'Factor_Name',
+                'Is_Applied', 'Task_Specific_Min', 'Task_Specific_Max', 'Task_Specific_Current_Value' // Updated columns
+            ];
             const taskFactorSettingsData = [];
             currentConfig.tasks.forEach(task => {
                  if (currentConfig.taskFactorSettings[task.id]) {
                      Object.keys(currentConfig.taskFactorSettings[task.id]).forEach(factorId => {
                          const setting = currentConfig.taskFactorSettings[task.id][factorId];
                          const factor = currentConfig.globalFactors.find(f => f.id === factorId);
-                         if (factor && setting) { // Ensure both factor and setting exist
-                             taskFactorSettingsData.push([task.id, task.name, factor.id, factor.name, setting.applied, setting.currentValue]);
+                         if (factor && setting) {
+                             taskFactorSettingsData.push([
+                                 task.id, task.name, factor.id, factor.name,
+                                 setting.applied, setting.min, setting.max, setting.currentValue // Added min/max
+                             ]);
                          }
                      });
                  }
@@ -865,11 +992,13 @@ document.addEventListener('DOMContentLoaded', () => {
              }
          });
 
+        // Initialize task factor settings based on initial tasks/factors
+        initializeTaskFactorSettings(); // CRUCIAL: Call AFTER initial config tasks/factors are set
+
         sopNameInput.value = config.sopName;
         sopDescriptionTextarea.value = config.sopDescription;
 
         renderGlobalFactorList();
-        initializeTaskFactorSettings();
         renderTaskList();
         projectAreaInput.addEventListener('input', calculateTotals);
         laborRateInput.addEventListener('input', calculateTotals);

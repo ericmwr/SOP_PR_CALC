@@ -57,6 +57,7 @@ The SOP (Standard Operating Procedure) Calculator is a web application designed 
 - Clear visual separation between main content and sidebar
 
 ## Recent Updates
+- Added editable min/max range inputs for task-specific factors, allowing customization of factor ranges per task
 - Fixed issue where task-specific factors were not displaying due to missing initial data
 - Improved layout with centered content on the methodology page for better readability
 - Added a dedicated Methodology & Checklist page for documenting measurement procedures and inspection criteria

@@ -288,28 +288,78 @@ h4 { margin-top: 10px;}
     margin: 15px auto 0 auto; /* Center button */
 }
 
-/* --- Task Factor Editor Panel (Keep previous styles) --- */
+/* --- Task Factor Editor Panel (UPDATED) --- */
 .factor-edit-panel {
     margin-left: 28px; /* Align with details grid */
     margin-top: 15px;
     padding: 15px;
-    background-color: #f0f8ff; /* Light blue background */
+    background-color: #f0f8ff;
     border: 1px solid #add8e6;
     border-radius: 4px;
 }
 .factor-edit-item {
     display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    padding-bottom: 5px;
+    align-items: center; /* Vertically align items */
+    margin-bottom: 12px; /* Increased spacing */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    padding-bottom: 8px;
     border-bottom: 1px dotted #eee;
 }
-.factor-edit-item input[type="checkbox"] { margin-right: 8px; }
-.factor-edit-item label.factor-name-label { width: 220px; margin-right: 10px; font-size: 0.9em; }
-.factor-edit-item .global-range-display { font-size: 0.8em; color: #666; width: 80px; text-align: center;}
-.factor-edit-item input[type="range"] { flex-grow: 1; max-width: 180px; margin: 0 10px; cursor: pointer; }
-.factor-edit-item .factor-value { font-size: 0.9em; font-weight: bold; min-width: 40px; text-align: right; }
+.factor-edit-item input[type="checkbox"] { margin-right: 8px; flex-shrink: 0;} /* Prevent checkbox from shrinking */
+.factor-edit-item label.factor-name-label {
+    width: 200px; /* Adjust width */
+    margin-right: 10px;
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+.factor-edit-item .global-range-display {
+    font-size: 0.8em;
+    color: #666;
+    width: 70px; /* Adjust width */
+    text-align: center;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+/* NEW: Styles for Min/Max/Slider group */
+.factor-slider-group {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Allow this group to take remaining space */
+    min-width: 280px; /* Ensure minimum space for controls */
+}
+
+.factor-edit-item input.range-input { /* Style for MIN/MAX inputs */
+     width: 55px; /* Width for min/max boxes */
+     padding: 4px;
+     font-size: 0.85em;
+     text-align: right;
+     border: 1px solid #ccc;
+     border-radius: 3px;
+     margin: 0 5px; /* Space around min/max */
+     -moz-appearance: textfield; /* Firefox - hide number spinners */
+}
+/* Chrome, Safari, Edge, Opera - hide number spinners */
+.factor-edit-item input.range-input::-webkit-outer-spin-button,
+.factor-edit-item input.range-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.factor-edit-item input[type="range"] {
+    flex-grow: 1; /* Slider takes available space within the group */
+    max-width: 150px; /* Max width */
+    margin: 0 5px; /* Space around slider */
+    cursor: pointer;
+    height: 5px; /* Make slider less tall */
+}
+.factor-edit-item .factor-value {
+    font-size: 0.9em;
+    font-weight: bold;
+    min-width: 45px; /* Ensure space for value */
+    text-align: right;
+    padding-left: 5px; /* Space before value */
+}
 .close-edit-panel-btn { display: block; margin: 10px auto 0 auto; }
 
 /* --- Project Details & Results --- */
