@@ -57,6 +57,7 @@ The SOP (Standard Operating Procedure) Calculator is a web application designed 
 - Clear visual separation between main content and sidebar
 
 ## Recent Updates
+- Improved layout with centered content on the methodology page for better readability
 - Added a dedicated Methodology & Checklist page for documenting measurement procedures and inspection criteria
 - Implemented editable checklist table with add/delete row functionality
 - Added save/load functionality specific to the methodology page content
