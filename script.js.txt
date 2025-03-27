@@ -1,0 +1,140 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DATA (Simulates your Google Sheet data) ---
+
+    // Task Data (including pre-calculated avg rate and time/sf)
+    const tasks = [
+        // Prep Tasks
+        { id: 'T001', name: 'Surface Inspection', avgRate: 550, timePerSf: 1/550, group: 'Prep', defaultChecked: true },
+        { id: 'T002', name: 'Surface Cleaning', avgRate: 275, timePerSf: 1/275, group: 'Prep', defaultChecked: true },
+        { id: 'T003', name: 'Nail Hole Filling/Spackling', avgRate: 200, timePerSf: 1/200, group: 'Prep', defaultChecked: true },
+        { id: 'T004', name: 'Caulking Seams and Transitions', avgRate: 175, timePerSf: 1/175, group: 'Prep', defaultChecked: true },
+        { id: 'T005', name: 'Sanding Preparation', avgRate: 225, timePerSf: 1/225, group: 'Prep', defaultChecked: true },
+        { id: 'T006', name: 'Spot Priming (as needed)', avgRate: 250, timePerSf: 1/250, group: 'Prep', defaultChecked: true },
+        // Paint Tasks
+        { id: 'T007', name: 'First Coat Application', avgRate: 200, timePerSf: 1/200, group: 'Paint', defaultChecked: true },
+        { id: 'T008', name: 'Light Sanding Between Coats', avgRate: 325, timePerSf: 1/325, group: 'Paint', defaultChecked: true },
+        { id: 'T009', name: 'Final Coat Application', avgRate: 225, timePerSf: 1/225, group: 'Paint', defaultChecked: true },
+        { id: 'T010', name: 'Post-Finish Inspection', avgRate: 475, timePerSf: 1/475, group: 'Paint', defaultChecked: true },
+        { id: 'T011', name: 'Final Touch-Up', avgRate: 350, timePerSf: 1/350, group: 'Paint', defaultChecked: true },
+        // Optional Tasks (Add more as needed)
+        { id: 'OPT01', name: 'Heavy Duty Cleaning', avgRate: 175, timePerSf: 1/175, group: 'Optional', defaultChecked: false },
+        { id: 'OPT02', name: 'Full Surface Priming', avgRate: 175, timePerSf: 1/175, group: 'Optional', defaultChecked: false },
+        { id: 'OPT03', name: 'Extensive Masking', avgRate: 125, timePerSf: 1/125, group: 'Optional', defaultChecked: false },
+    ];
+
+    // Factor Data (including pre-calculated avg multiplier and applicable tasks as an array)
+    const factors = [
+        { id: 'F01', name: 'Deep/Complex Bead Pattern', avgMultiplier: 0.8, applicableTaskIds: ['T005','T007','T008','T009'] },
+        { id: 'F02', name: 'Shallow/Simple Bead Pattern', avgMultiplier: 1.15, applicableTaskIds: ['T005','T007','T008','T009'] },
+        { id: 'F03', name: 'Poor Factory Primer Condition', avgMultiplier: 0.75, applicableTaskIds: ['T005','T006','T007'] },
+        { id: 'F04', name: 'Excellent Factory Primer Condition', avgMultiplier: 1.15, applicableTaskIds: ['T005','T006','T007'] },
+        { id: 'F05', name: 'High Detail Areas (>1 per 50 SF)', avgMultiplier: 0.85, applicableTaskIds: ['T003','T004','T007','T009','T011'] },
+        { id: 'F06', name: 'Seamless Runs (>50 LF)', avgMultiplier: 1.15, applicableTaskIds: ['T007','T009'] },
+        // Using includes('*') for "All Tasks" factors later
+        { id: 'F07', name: 'Working Height >7 ft', avgMultiplier: 0.85, applicableTaskIds: ['*'] },
+        { id: 'F08', name: 'Restricted Access', avgMultiplier: 0.75, applicableTaskIds: ['*'] },
+        { id: 'F09', name: 'Dark Color (Extra Coat Possible)', avgMultiplier: 0.875, applicableTaskIds: ['T007','T009'] },
+        { id: 'F10', name: 'High-Gloss Finish', avgMultiplier: 0.825, applicableTaskIds: ['T005','T008','T009','T010'] },
+    ];
+
+    // --- DOM Elements ---
+    const taskListDiv = document.getElementById('task-list');
+    const factorListDiv = document.getElementById('factor-list');
+    const projectAreaInput = document.getElementById('project-area');
+    const laborRateInput = document.getElementById('labor-rate');
+    const finalRateSpan = document.getElementById('final-rate');
+    const totalTimeSpan = document.getElementById('total-time');
+    const totalCostSpan = document.getElementById('total-cost');
+
+    // --- Functions ---
+
+    // Function to populate checkboxes
+    function populateCheckboxes(listDiv, items, type) {
+        items.forEach(item => {
+            const div = document.createElement('div');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `${type}-${item.id}`;
+            checkbox.value = item.id;
+            checkbox.checked = item.defaultChecked !== undefined ? item.defaultChecked : false; // Set default checked status
+            checkbox.dataset.itemId = item.id; // Store ID for easier retrieval
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = item.name;
+
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            listDiv.appendChild(div);
+        });
+    }
+
+    // Core Calculation Logic
+    function calculateTotals() {
+        const projectArea = parseFloat(projectAreaInput.value) || 0;
+        const laborRate = parseFloat(laborRateInput.value) || 0;
+
+        const selectedTaskIds = Array.from(taskListDiv.querySelectorAll('input[type="checkbox"]:checked'))
+                                     .map(cb => cb.value);
+        const selectedFactorIds = Array.from(factorListDiv.querySelectorAll('input[type="checkbox"]:checked'))
+                                       .map(cb => cb.value);
+
+        let totalAdjustedTimePerSf = 0;
+
+        selectedTaskIds.forEach(taskId => {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return; // Skip if task not found
+
+            let baseTimePerSf = task.timePerSf;
+            let effectiveMultiplier = 1;
+
+            selectedFactorIds.forEach(factorId => {
+                const factor = factors.find(f => f.id === factorId);
+                if (!factor) return; // Skip if factor not found
+
+                // Check if factor applies to this task (includes '*' for all tasks)
+                const applies = factor.applicableTaskIds.includes(taskId) || factor.applicableTaskIds.includes('*');
+
+                if (applies) {
+                    effectiveMultiplier *= factor.avgMultiplier;
+                }
+            });
+
+            // Avoid division by zero if multiplier becomes 0 (unlikely here)
+            const adjustedTime = effectiveMultiplier !== 0 ? baseTimePerSf / effectiveMultiplier : baseTimePerSf;
+            totalAdjustedTimePerSf += adjustedTime;
+        });
+
+        // Calculate final results
+        const finalRateSfPerHr = totalAdjustedTimePerSf > 0 ? (1 / totalAdjustedTimePerSf) : 0;
+        const estimatedHours = totalAdjustedTimePerSf * projectArea;
+        const estimatedCost = estimatedHours * laborRate;
+
+        // Update the display
+        finalRateSpan.textContent = finalRateSfPerHr.toFixed(2);
+        totalTimeSpan.textContent = estimatedHours.toFixed(2);
+        totalCostSpan.textContent = estimatedCost.toFixed(2);
+    }
+
+    // --- Initialization and Event Listeners ---
+
+    // Populate the lists
+    populateCheckboxes(taskListDiv, tasks, 'task');
+    populateCheckboxes(factorListDiv, factors, 'factor');
+
+    // Add event listeners to all checkboxes and inputs
+    const inputs = [
+        ...taskListDiv.querySelectorAll('input[type="checkbox"]'),
+        ...factorListDiv.querySelectorAll('input[type="checkbox"]'),
+        projectAreaInput,
+        laborRateInput
+    ];
+
+    inputs.forEach(input => {
+        input.addEventListener('change', calculateTotals); // Use 'change' for checkboxes
+        input.addEventListener('input', calculateTotals); // Use 'input' for number fields for immediate updates
+    });
+
+    // Initial calculation on page load
+    calculateTotals();
+});

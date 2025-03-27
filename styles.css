@@ -1,0 +1,223 @@
+/* --- SOP Header Section Styling --- */
+.sop-header div {
+    margin-bottom: 10px;
+    display: flex; /* Align label and input/textarea */
+    align-items: flex-start; /* Align label top with input top */
+}
+.sop-header label {
+    width: 130px; /* Fixed width for labels */
+    padding-right: 10px;
+    font-weight: bold;
+    flex-shrink: 0; /* Prevent label from shrinking */
+}
+.sop-header input[type="text"],
+.sop-header textarea {
+    flex-grow: 1; /* Allow input/textarea to fill remaining space */
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding/border in element's total width/height */
+}
+.sop-header textarea {
+    resize: vertical; /* Allow vertical resizing only */
+    min-height: 60px; /* Minimum height */
+}
+
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 900px; /* Wider container might be needed */
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h4 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 15px;
+}
+h4 { margin-top: 10px;}
+
+.section {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+}
+
+/* --- Save/Load Controls --- */
+.save-load-controls {
+    text-align: center;
+    background-color: #e0e0e0; /* Slightly different background */
+}
+.save-load-controls button,
+.save-load-controls .button-label {
+    padding: 10px 15px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border: 1px solid #adadad;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    margin: 0 10px;
+    display: inline-block; /* For label */
+}
+.save-load-controls .button-label:hover,
+.save-load-controls button:hover {
+    background-color: #e0e0e0;
+}
+
+/* --- Global Factor Management --- */
+.global-factor-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    flex-wrap: wrap;
+}
+.global-factor-item input[type="text"] {
+    margin-right: 10px;
+}
+.global-factor-item input[placeholder*="Name"] { width: 250px; }
+.global-factor-item input[placeholder*="Range"] { width: 100px; text-align: center; }
+.global-factor-item button { padding: 4px 8px; font-size: 0.8em;}
+.delete-factor-btn { background-color: #fdd; }
+.delete-factor-btn:hover { background-color: #faa; }
+
+.add-factor-form {
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px dashed #ccc;
+    background-color: #f9f9f9;
+}
+
+/* --- Task Item Styling (UPDATED) --- */
+.task-item {
+    margin-bottom: 20px; /* Increased spacing */
+    padding: 15px;      /* Add padding */
+    border: 1px solid #ccc; /* Add border */
+    border-radius: 5px;
+    background-color: #fefefe; /* Slightly off-white */
+}
+
+.task-main-controls { /* Top row: Checkbox, Name, Buttons */
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap; /* Allow wrapping */
+}
+.task-main-controls input[type="checkbox"] { margin-right: 8px; }
+.task-main-controls input.task-name-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 1.1em; /* Make name slightly larger */
+    border: none; /* Subtle name input */
+    border-bottom: 1px solid #eee;
+    padding: 5px 2px;
+}
+.task-main-controls input.task-name-input:focus {
+    outline: none;
+    border-bottom: 1px solid #aaa;
+}
+.task-main-controls button { margin-left: 10px; } /* Space out buttons */
+
+
+/* NEW: Task Details Grid */
+.task-details-grid {
+    display: grid;
+    grid-template-columns: auto 1fr; /* Label column, Input column */
+    gap: 8px 10px; /* Row gap, Column gap */
+    margin-left: 28px; /* Indent details slightly */
+    margin-bottom: 10px;
+}
+.task-details-grid > div {
+    display: contents; /* Allow direct children (label, input) to participate in grid */
+}
+.task-details-grid label {
+    grid-column: 1;
+    text-align: right;
+    font-size: 0.9em;
+    color: #333;
+    padding-top: 8px; /* Align label better with input */
+}
+.task-details-grid input[type="number"],
+.task-details-grid input[type="text"],
+.task-details-grid textarea {
+    grid-column: 2;
+    width: 100%; /* Make inputs fill the column */
+    box-sizing: border-box; /* Include padding/border in width */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 0.95em;
+}
+.task-details-grid textarea {
+    resize: vertical;
+    min-height: 40px;
+}
+.task-details-grid input.task-rate-input { width: 90px; } /* Specific width for rate */
+
+/* --- Task Management Add Button --- */
+#add-task-btn {
+    display: block;
+    margin: 15px auto 0 auto; /* Center button */
+}
+
+/* --- Task Factor Editor Panel (Keep previous styles) --- */
+.factor-edit-panel {
+    margin-left: 28px; /* Align with details grid */
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f0f8ff; /* Light blue background */
+    border: 1px solid #add8e6;
+    border-radius: 4px;
+}
+.factor-edit-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #eee;
+}
+.factor-edit-item input[type="checkbox"] { margin-right: 8px; }
+.factor-edit-item label.factor-name-label { width: 220px; margin-right: 10px; font-size: 0.9em; }
+.factor-edit-item .global-range-display { font-size: 0.8em; color: #666; width: 80px; text-align: center;}
+.factor-edit-item input[type="range"] { flex-grow: 1; max-width: 180px; margin: 0 10px; cursor: pointer; }
+.factor-edit-item .factor-value { font-size: 0.9em; font-weight: bold; min-width: 40px; text-align: right; }
+.close-edit-panel-btn { display: block; margin: 10px auto 0 auto; }
+
+/* --- Project Details & Results --- */
+#project-area, #labor-rate {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100px;
+    margin-left: 5px;
+}
+.section > div > label {
+     display: inline-block;
+     min-width: 180px;
+}
+
+/* Results Section */
+.results {
+    background-color: #e7f3fe;
+    border-left: 5px solid #2196F3;
+}
+.results p {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+.results strong {
+    color: #1a73e8;
+}

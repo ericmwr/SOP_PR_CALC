@@ -1,0 +1,77 @@
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.section {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+}
+
+#task-list div,
+#factor-list div {
+    margin-bottom: 8px;
+}
+
+label {
+    margin-right: 10px;
+    display: inline-block; /* Ensure proper alignment */
+    min-width: 180px; /* Adjust as needed */
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+input[type="number"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100px; /* Adjust as needed */
+}
+
+.results {
+    background-color: #e7f3fe;
+    border-left: 5px solid #2196F3;
+}
+
+.results p {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.results strong {
+    color: #1a73e8;
+}
+
+/* Style for task labels */
+#task-list label, #factor-list label {
+    display: inline; /* Override min-width for checkboxes */
+    min-width: 0;
+    margin-left: 5px;
+}
+#task-list div label:first-of-type,
+#factor-list div label:first-of-type {
+     margin-left: 0;
+}
