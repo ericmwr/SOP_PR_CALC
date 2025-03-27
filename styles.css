@@ -32,21 +32,17 @@ body {
 
 /* --- Layout Wrapper --- */
 .app-wrapper {
-    /* No specific layout needed here unless using Flex/Grid later */
-     /* If using padding on body, adjust accordingly */
-     margin: 0 auto; /* Center if needed, adjust max-width below */
-     max-width: 1400px; /* Example max-width for overall layout */
+    margin: 0 auto; /* Center */
+    max-width: 1400px; /* Overall max-width */
 }
 
 /* --- Main Content Area --- */
 .main-content {
     /* Needs padding on the right to avoid being overlapped by the fixed sidebar */
-    /* Adjust padding value based on sidebar width + sidebar right offset + desired gap */
     padding-right: 380px; /* Example: 320px width + 20px right + 40px gap */
-    /* Max-width can be applied here if desired */
-     max-width: 950px; /* Match previous container width for content */
-     margin-left: 20px; /* Add some left margin if body has no padding */
-     margin-right: auto; /* Keep it somewhat centered before the sidebar padding */
+    max-width: 950px;
+    margin-left: 20px; /* Add some left margin if body has no padding */
+    margin-right: auto; /* Keep it somewhat centered before the sidebar padding */
 }
 .main-content .section {
      /* Styles for sections specifically within the main content */
@@ -58,13 +54,13 @@ body {
 /* --- Sidebar Area Styling --- */
 .sidebar-content {
     position: fixed;
-    top: 80px; /* Adjust based on h1 height or desired top spacing */
+    top: 65px; /* ADJUSTED: Reduced top offset */
     right: 20px; /* Space from the right edge */
     width: 320px; /* Fixed width for the sidebar */
-    height: calc(100vh - 100px); /* Calculate height to fill most of viewport (adjust 100px based on top + bottom spacing) */
+    height: calc(100vh - 85px); /* ADJUSTED: Reduced total offset */
     overflow-y: auto; /* Allow sidebar content to scroll if it overflows */
     background-color: #f8f9fa; /* Light background for sidebar */
-    padding: 20px;
+    padding: 15px; /* Slightly reduced padding */
     border-radius: 8px;
     box-shadow: -3px 0px 10px rgba(0, 0, 0, 0.1); /* Shadow on the left */
     z-index: 100; /* Ensure it stays on top */
@@ -73,7 +69,7 @@ body {
 
 /* Styles for sections specifically within the sidebar */
 .sidebar-content .section {
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* Slightly reduced margin */
     background-color: #fff; /* White background for cards in sidebar */
     border: 1px solid #e0e0e0;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -110,13 +106,13 @@ h4 { margin-top: 10px;}
 /* --- Save/Load Controls --- */
 .save-load-controls button,
 .save-load-controls .button-label {
-    padding: 10px 15px;
-    font-size: 1.1em;
+    padding: 8px 12px; /* ADJUSTED: Reduced padding */
+    font-size: 0.95em; /* ADJUSTED: Reduced font size */
     cursor: pointer;
     border: 1px solid #adadad;
     border-radius: 5px;
     background-color: #f0f0f0;
-    margin: 0 10px;
+    margin: 5px 8px; /* ADJUSTED: Reduced margin */
     display: inline-block; /* For label */
 }
 .save-load-controls .button-label:hover,
