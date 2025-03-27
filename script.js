@@ -3,7 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let config = {
         sopName: "New Construction Interior - Wainscot - Bead-Board Painting",
         sopDescription: "This specification covers the painting...",
-        globalFactors: [ /* ... keep factors ... */ ],
+        globalFactors: [
+             { id: 'F001', name: 'Surface Condition', multiplierRange: '0.8-1.2' },
+             { id: 'F002', name: 'Access Difficulty', multiplierRange: '0.7-1.0' },
+             { id: 'F003', name: 'Detail Complexity', multiplierRange: '0.75-1.1' },
+             { id: 'F004', name: 'Environmental Conditions', multiplierRange: '0.9-1.1' },
+             { id: 'F005', name: 'Quality Standard', multiplierRange: '0.85-1.3' }
+        ],
         tasks: [
             // *** UPDATED TASK STRUCTURE with 'methods' array ***
             { id: 'T001', name: 'Surface Inspection', isSelected: true,
@@ -498,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
               name: 'New Task - Edit Name',
               isSelected: true,
               methods: [{ name: 'Default Method', rate: 100, isSelected: true }], // Initialize with one method
-              skillLevel: 'Medium', materialsRequired: '', 
+              skillLevel: 'Medium', materialsRequired: '',
               factorsAffecting: '', description: ''
           };
           config.tasks.push(newTask);
@@ -511,11 +517,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleFactorEditPanel(event) {
         const taskId = event.target.dataset.taskId;
         const panel = document.getElementById(`factor-edit-panel-${taskId}`);
+        // console.log(`[toggleFactorEditPanel] Task ${taskId}: panel found =`, panel); // DEBUG LOG REMOVED
         if (!panel) return;
         const isVisible = panel.style.display === 'block';
         if (isVisible) {
             panel.style.display = 'none'; event.target.textContent = 'Edit Factors';
         } else {
+            // console.log(`[toggleFactorEditPanel] Task ${taskId}: Calling renderTaskFactorEditor...`); // DEBUG LOG REMOVED
             renderTaskFactorEditor(taskId, panel); // Populate before showing
             panel.style.display = 'block'; event.target.textContent = 'Hide Factors';
         }
@@ -523,18 +531,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function renderTaskFactorEditor(taskId, panelElement) {
+        // console.log(`[renderTaskFactorEditor] Task ${taskId}: Starting render.`); // DEBUG LOG REMOVED
         panelElement.innerHTML = ''; // Clear previous content
         // Ensure entry exists in global settings
-        if (!config.taskFactorSettings[taskId]) config.taskFactorSettings[taskId] = {};
+        if (!config.taskFactorSettings[taskId]) {
+            // console.log(`[renderTaskFactorEditor] Task ${taskId}: config.taskFactorSettings[taskId] is undefined, initializing.`); // DEBUG LOG REMOVED
+            config.taskFactorSettings[taskId] = {};
+        } else {
+            // console.log(`[renderTaskFactorEditor] Task ${taskId}: config.taskFactorSettings[taskId] exists.`); // DEBUG LOG REMOVED
+        }
 
+        // console.log(`[renderTaskFactorEditor] Task ${taskId}: config.globalFactors.length = ${config.globalFactors.length}`); // DEBUG LOG REMOVED
         config.globalFactors.forEach(factor => {
+            // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id} (${factor.name}): Processing factor.`); // DEBUG LOG REMOVED
             // Initialize task-specific settings for this factor if they don't exist IN THE GLOBAL STORE
             if (!config.taskFactorSettings[taskId][factor.id]) {
+                // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: config.taskFactorSettings[taskId][factor.id] is undefined, initializing.`); // DEBUG LOG REMOVED
                 config.taskFactorSettings[taskId][factor.id] = {
                     applied: false, currentValue: factor.avgMultiplier
                 };
             }
             const factorSetting = config.taskFactorSettings[taskId][factor.id];
+            if (!factorSetting) {
+                console.error(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: factorSetting is unexpectedly undefined! Skipping.`); // Keep this error log
+                return; // Skip this factor
+            } else {
+                 // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: factorSetting found:`, JSON.stringify(factorSetting)); // DEBUG LOG REMOVED
+            }
 
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('factor-edit-item');
@@ -569,6 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
             itemDiv.appendChild(applyCheckbox); itemDiv.appendChild(nameLabel); itemDiv.appendChild(rangeDisplay);
             itemDiv.appendChild(slider); itemDiv.appendChild(valueSpan);
             panelElement.appendChild(itemDiv);
+            // console.log(`[renderTaskFactorEditor] Task ${taskId}, Factor ${factor.id}: Appended factor item to panel.`); // DEBUG LOG REMOVED
         });
          const closeBtn = document.createElement('button');
          closeBtn.textContent = 'Done Editing Factors';
@@ -579,6 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
               if(editBtn) editBtn.textContent = 'Edit Factors';
          };
          panelElement.appendChild(closeBtn);
+         // console.log(`[renderTaskFactorEditor] Task ${taskId}: Finished render, panel content:`, panelElement.innerHTML.substring(0, 200) + '...'); // DEBUG LOG REMOVED
     }
 
     function handleApplyFactorChange(event) {
@@ -629,7 +654,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (config.taskFactorSettings[task.id]) {
                 Object.keys(config.taskFactorSettings[task.id]).forEach(factorId => {
                     const setting = config.taskFactorSettings[task.id][factorId];
-                    if (setting.applied && config.globalFactors.some(f => f.id === factorId)) {
+                    // Ensure setting exists and is applied before using it
+                    if (setting && setting.applied && config.globalFactors.some(f => f.id === factorId)) {
                         effectiveMultiplier *= setting.currentValue;
                     }
                 });
@@ -650,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Save/Load Logic ---
-    
+
     // Function to get the current configuration state
     function buildConfigurationObject() {
          config.sopName = sopNameInput.value;
@@ -741,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      Object.keys(currentConfig.taskFactorSettings[task.id]).forEach(factorId => {
                          const setting = currentConfig.taskFactorSettings[task.id][factorId];
                          const factor = currentConfig.globalFactors.find(f => f.id === factorId);
-                         if (factor) {
+                         if (factor && setting) { // Ensure both factor and setting exist
                              taskFactorSettingsData.push([task.id, task.name, factor.id, factor.name, setting.applied, setting.currentValue]);
                          }
                      });
@@ -808,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 calculateTotals();
                 alert('Configuration loaded successfully!');
-            } catch (error) { 
+            } catch (error) {
                 console.error("Error loading configuration:", error);
                 alert(`Error loading configuration file: ${error.message}`);
             }
@@ -830,7 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
              methods: Array.isArray(task.methods) ? task.methods : [{ name: 'Default', rate: task.baseRate || 100, isSelected: true }]
          }));
          // Ensure exactly one method selected initially
-         config.tasks.forEach(task => { 
+         config.tasks.forEach(task => {
              if (task.methods && task.methods.length > 0) {
                  const selectedCount = task.methods.filter(m => m.isSelected).length;
                  if (selectedCount !== 1) {
@@ -841,8 +867,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sopNameInput.value = config.sopName;
         sopDescriptionTextarea.value = config.sopDescription;
-        initializeTaskFactorSettings();
+
         renderGlobalFactorList();
+        initializeTaskFactorSettings();
         renderTaskList();
         projectAreaInput.addEventListener('input', calculateTotals);
         laborRateInput.addEventListener('input', calculateTotals);
