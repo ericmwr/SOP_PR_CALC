@@ -119,11 +119,22 @@ body {
 
 /* Adjust inputs in sidebars */
 .left-sidebar input[type="text"],
-.left-sidebar textarea,
+.left-sidebar textarea {
+    width: calc(100% - 110px); /* Account for label width */
+    font-size: 0.9em;
+}
+
+/* Specific styling for SOP Details inputs */
+.sop-header input[type="text"],
+.sop-header textarea {
+    width: calc(100% - 130px); /* Wider for text content */
+}
+
+/* Specific styling for Project Details inputs */
 .right-sidebar input[type="text"],
 .right-sidebar textarea,
 .right-sidebar input[type="number"] {
-    width: calc(100% - 110px); /* Account for label width */
+    width: 80px; /* Narrower for number inputs */
     font-size: 0.9em;
 }
 
