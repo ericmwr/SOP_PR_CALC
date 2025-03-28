@@ -208,14 +208,18 @@ h4 { margin-top: 10px;}
 /* Compact View */
 .global-factor-item .factor-compact-view {
     display: grid;
-    grid-template-columns: 1fr 70px 40px;
+    grid-template-columns: 30px 1fr 70px 40px;
     grid-template-areas: 
-        "name range edit"
-        "desc desc desc";
+        "check name range edit"
+        "blank desc desc desc";
     align-items: center;
     width: 100%;
     padding: 8px 0;
     column-gap: 8px;
+}
+.global-factor-item .factor-compact-view input[type="checkbox"] {
+    grid-area: check;
+    justify-self: center;
 }
 .global-factor-item .factor-name-display {
     grid-area: name;

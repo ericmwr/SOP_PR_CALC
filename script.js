@@ -255,6 +255,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const compactViewDiv = document.createElement('div');
             compactViewDiv.classList.add('factor-compact-view');
             
+            // Add checkbox for global factor selection
+            const applyCheckbox = document.createElement('input');
+            applyCheckbox.type = 'checkbox';
+            applyCheckbox.id = `global-apply-${factor.id}`;
+            applyCheckbox.checked = factor.isApplied || false; // Default to false if not set
+            applyCheckbox.dataset.factorId = factor.id;
+            applyCheckbox.addEventListener('change', handleGlobalFactorApplyChange);
+            
             const nameDisplay = document.createElement('div');
             nameDisplay.classList.add('factor-name-display');
             nameDisplay.textContent = factor.name;
@@ -268,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
             editBtn.classList.add('edit-factor-btn');
             editBtn.addEventListener('click', () => handleEditFactor(factor.id));
             
+            compactViewDiv.appendChild(applyCheckbox);
             compactViewDiv.appendChild(nameDisplay);
             compactViewDiv.appendChild(rangeDisplay);
             compactViewDiv.appendChild(editBtn);
@@ -1166,11 +1175,33 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateTotals(); // Recalculate with new value
     }
 
+    // Handler for global factor apply checkbox
+    function handleGlobalFactorApplyChange(event) {
+        const checkbox = event.target;
+        const factorId = checkbox.dataset.factorId;
+        const isApplied = checkbox.checked;
+        
+        // Find the factor and update its isApplied property
+        const factorIndex = config.globalFactors.findIndex(f => f.id === factorId);
+        if (factorIndex !== -1) {
+            config.globalFactors[factorIndex].isApplied = isApplied;
+            calculateTotals(); // Recalculate totals when a global factor is applied/unapplied
+        }
+    }
+
     // --- Core Calculation Logic (UPDATED) ---
     function calculateTotals() {
         const projectArea = parseFloat(projectAreaInput.value) || 0;
         const laborRate = parseFloat(laborRateInput.value) || 0;
         let totalAdjustedTimePerSf = 0;
+        
+        // Calculate global factor multiplier (applied to all tasks)
+        let globalMultiplier = 1;
+        config.globalFactors.forEach(factor => {
+            if (factor.isApplied) {
+                globalMultiplier *= factor.avgMultiplier;
+            }
+        });
 
         config.tasks.forEach(task => {
             if (!task.isSelected || !task.methods || task.methods.length === 0) return; // Skip unselected or method-less tasks
@@ -1187,16 +1218,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentRate <= 0) currentRate = 1;
             const baseTimePerSf = 1 / currentRate; // Base time comes from selected method
 
-            let effectiveMultiplier = 1;
+            // Apply task-specific factors
+            let taskFactorMultiplier = 1;
             if (config.taskFactorSettings[task.id]) {
                 Object.keys(config.taskFactorSettings[task.id]).forEach(factorId => {
                     const setting = config.taskFactorSettings[task.id][factorId];
                     // Ensure setting exists and is applied before using it
                     if (setting && setting.applied && config.globalFactors.some(f => f.id === factorId)) {
-                        effectiveMultiplier *= setting.currentValue;
+                        taskFactorMultiplier *= setting.currentValue;
                     }
                 });
             }
+            
+            // Combine global and task-specific multipliers
+            const effectiveMultiplier = globalMultiplier * taskFactorMultiplier;
 
             const adjustedTime = effectiveMultiplier !== 0 ? baseTimePerSf / effectiveMultiplier : baseTimePerSf;
             totalAdjustedTimePerSf += adjustedTime;
