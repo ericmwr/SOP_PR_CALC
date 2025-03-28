@@ -278,6 +278,38 @@ h4 { margin-top: 10px;}
 }
 .global-factor-item input[placeholder*="Name"] { width: 250px; }
 .global-factor-item input[placeholder*="Range"] { width: 100px; text-align: center; }
+
+/* Slider row styling */
+.global-factor-item .slider-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
+}
+.global-factor-item .slider-row input[type="number"] {
+    width: 55px;
+    text-align: right;
+    padding: 4px;
+    font-size: 0.85em;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin: 0 5px;
+}
+.global-factor-item .slider-row input[type="range"] {
+    flex-grow: 1;
+    max-width: 150px;
+    margin: 0 10px;
+    cursor: pointer;
+    height: 5px;
+}
+.global-factor-item .slider-row .factor-value {
+    font-size: 0.9em;
+    font-weight: bold;
+    min-width: 45px;
+    text-align: right;
+    padding-left: 5px;
+}
+
 .global-factor-item .button-row {
     display: flex;
     justify-content: flex-start;

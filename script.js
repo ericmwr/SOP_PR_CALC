@@ -310,6 +310,61 @@ document.addEventListener('DOMContentLoaded', () => {
             inputRowDiv.appendChild(rangeInput);
             mainInputsDiv.appendChild(inputRowDiv);
             
+            // Create slider row
+            const sliderRowDiv = document.createElement('div');
+            sliderRowDiv.classList.add('slider-row');
+            
+            // Parse the range to get min and max values
+            const range = parseRangeString(factor.multiplierRange);
+            
+            // Min Input
+            const minInput = document.createElement('input');
+            minInput.type = 'number';
+            minInput.classList.add('range-input');
+            minInput.id = `global-min-${factor.id}`;
+            minInput.value = range.min.toFixed(2);
+            minInput.step = "0.01";
+            minInput.min = "0.1";
+            minInput.dataset.factorId = factor.id;
+            minInput.dataset.bound = "min";
+            minInput.addEventListener('change', handleGlobalRangeInputChange);
+            
+            // Slider
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.id = `global-slider-${factor.id}`;
+            slider.min = range.min;
+            slider.max = range.max;
+            slider.step = "0.01";
+            slider.value = factor.avgMultiplier;
+            slider.dataset.factorId = factor.id;
+            slider.addEventListener('input', handleGlobalSliderChange);
+            
+            // Max Input
+            const maxInput = document.createElement('input');
+            maxInput.type = 'number';
+            maxInput.classList.add('range-input');
+            maxInput.id = `global-max-${factor.id}`;
+            maxInput.value = range.max.toFixed(2);
+            maxInput.step = "0.01";
+            maxInput.min = "0.11";
+            maxInput.dataset.factorId = factor.id;
+            maxInput.dataset.bound = "max";
+            maxInput.addEventListener('change', handleGlobalRangeInputChange);
+            
+            // Value Span
+            const valueSpan = document.createElement('span');
+            valueSpan.classList.add('factor-value');
+            valueSpan.id = `global-value-${factor.id}`;
+            valueSpan.textContent = factor.avgMultiplier.toFixed(2);
+            
+            sliderRowDiv.appendChild(minInput);
+            sliderRowDiv.appendChild(slider);
+            sliderRowDiv.appendChild(maxInput);
+            sliderRowDiv.appendChild(valueSpan);
+            
+            mainInputsDiv.appendChild(sliderRowDiv);
+            
             // Create button row
             const buttonRowDiv = document.createElement('div');
             buttonRowDiv.classList.add('button-row');
@@ -400,6 +455,102 @@ document.addEventListener('DOMContentLoaded', () => {
         if (factorItem) {
             factorItem.classList.remove('editing');
         }
+    }
+
+    // Handle global factor slider changes
+    function handleGlobalSliderChange(event) {
+        const slider = event.target;
+        const factorId = slider.dataset.factorId;
+        const valueSpan = document.getElementById(`global-value-${factorId}`);
+        
+        const factorIndex = config.globalFactors.findIndex(f => f.id === factorId);
+        if (factorIndex === -1) return;
+        
+        const newValue = parseFloat(slider.value);
+        config.globalFactors[factorIndex].avgMultiplier = newValue; // Update the global factor's average multiplier
+        
+        if (valueSpan) {
+            valueSpan.textContent = newValue.toFixed(2); // Update display
+        }
+        
+        // Update task factor settings that use this global factor
+        Object.keys(config.taskFactorSettings).forEach(taskId => {
+            if (config.taskFactorSettings[taskId][factorId] && !config.taskFactorSettings[taskId][factorId].applied) {
+                config.taskFactorSettings[taskId][factorId].currentValue = newValue;
+            }
+        });
+        
+        calculateTotals(); // Recalculate with new value
+    }
+    
+    // Handle global factor min/max input changes
+    function handleGlobalRangeInputChange(event) {
+        const input = event.target;
+        const factorId = input.dataset.factorId;
+        const bound = input.dataset.bound; // 'min' or 'max'
+        let newValue = parseFloat(input.value) || (bound === 'min' ? 0.1 : 1.0); // Default if invalid
+        
+        const factorIndex = config.globalFactors.findIndex(f => f.id === factorId);
+        if (factorIndex === -1) return;
+        
+        const factor = config.globalFactors[factorIndex];
+        const range = parseRangeString(factor.multiplierRange);
+        let min = range.min;
+        let max = range.max;
+        
+        const slider = document.getElementById(`global-slider-${factorId}`);
+        const minInput = document.getElementById(`global-min-${factorId}`);
+        const maxInput = document.getElementById(`global-max-${factorId}`);
+        const valueSpan = document.getElementById(`global-value-${factorId}`);
+        
+        if (bound === 'min') {
+            newValue = Math.max(0.1, newValue); // Enforce absolute minimum
+            // Ensure min doesn't exceed current max
+            newValue = Math.min(newValue, max - 0.01);
+            min = newValue;
+            if (slider) slider.min = newValue;
+            input.value = newValue.toFixed(2); // Update input field if adjusted
+            if (maxInput) maxInput.min = (newValue + 0.01).toFixed(2); // Update counterpart's min attribute
+        } else { // bound === 'max'
+            // Ensure max is greater than current min
+            newValue = Math.max(newValue, min + 0.01);
+            max = newValue;
+            if (slider) slider.max = newValue;
+            input.value = newValue.toFixed(2); // Update input field if adjusted
+            if (minInput) minInput.max = (newValue - 0.01).toFixed(2); // Update counterpart's max attribute
+        }
+        
+        // Update the multiplierRange in the config
+        factor.multiplierRange = `${min.toFixed(2)}-${max.toFixed(2)}`;
+        
+        // Clamp current slider value if it's now outside the new bounds
+        if (slider) {
+            let currentSliderValue = parseFloat(slider.value);
+            if (currentSliderValue < min) {
+                slider.value = min;
+            } else if (currentSliderValue > max) {
+                slider.value = max;
+            }
+            // Update config and display span with potentially clamped value
+            factor.avgMultiplier = parseFloat(slider.value);
+            if (valueSpan) valueSpan.textContent = factor.avgMultiplier.toFixed(2);
+        }
+        
+        // Update task factor settings that use this global factor
+        Object.keys(config.taskFactorSettings).forEach(taskId => {
+            if (config.taskFactorSettings[taskId][factorId]) {
+                if (bound === 'min') {
+                    config.taskFactorSettings[taskId][factorId].min = min;
+                } else {
+                    config.taskFactorSettings[taskId][factorId].max = max;
+                }
+                // Clamp current value if needed
+                const setting = config.taskFactorSettings[taskId][factorId];
+                setting.currentValue = Math.max(setting.min, Math.min(setting.max, setting.currentValue));
+            }
+        });
+        
+        calculateTotals(); // Recalculate as range change might affect effective value
     }
 
     function handleGlobalFactorUpdate(factorId, field, value) {
