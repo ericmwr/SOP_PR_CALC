@@ -317,8 +317,7 @@ h4 { margin-top: 10px;}
 
 /* Collapsed state styling */
 .task-item.collapsed .task-details-grid,
-.task-item.collapsed .task-methods-section,
-.task-item.collapsed .factor-edit-panel {
+.task-item.collapsed .task-methods-section {
     display: none !important; /* Hide all content when collapsed */
 }
 .task-item.collapsed {

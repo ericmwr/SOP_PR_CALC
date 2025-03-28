@@ -522,12 +522,6 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleCollapseBtn.dataset.taskId = task.id;
             toggleCollapseBtn.addEventListener('click', handleToggleCollapse);
 
-            const editFactorsBtn = document.createElement('button');
-            editFactorsBtn.textContent = 'Edit Factors'; 
-            editFactorsBtn.classList.add('edit-factors-btn');
-            editFactorsBtn.dataset.taskId = task.id; 
-            editFactorsBtn.addEventListener('click', toggleFactorEditPanel);
-
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'Delete Task'; 
             deleteBtn.classList.add('delete-task-btn');
@@ -537,7 +531,6 @@ document.addEventListener('DOMContentLoaded', () => {
             controlsDiv.appendChild(checkbox); 
             controlsDiv.appendChild(nameInput);
             controlsDiv.appendChild(toggleCollapseBtn);
-            controlsDiv.appendChild(editFactorsBtn); 
             controlsDiv.appendChild(deleteBtn);
             taskItemDiv.appendChild(controlsDiv);
 
@@ -600,11 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             taskItemDiv.appendChild(methodsSectionDiv);
 
-            // --- Factor Editor Panel Placeholder ---
-            const factorEditPanel = document.createElement('div'); /* ... (same as before) ... */
-             factorEditPanel.classList.add('factor-edit-panel'); factorEditPanel.id = `factor-edit-panel-${task.id}`;
-             factorEditPanel.style.display = 'none';
-             taskItemDiv.appendChild(factorEditPanel);
+            // Factor editor panel removed as requested
 
             // Append Task Item
             taskListDiv.appendChild(taskItemDiv);
