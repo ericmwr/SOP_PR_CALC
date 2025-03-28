@@ -121,8 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- DOM Elements ---
-    const saveConfigJsonBtn = document.getElementById('save-config-json-btn');
-    const saveConfigCsvBtn = document.getElementById('save-config-csv-btn');
+    const saveAllFormatsBtn = document.getElementById('save-all-formats-btn');
     const loadConfigInput = document.getElementById('load-config-input');
     const sopNameInput = document.getElementById('sop-name');
     const sopDescriptionTextarea = document.getElementById('sop-description');
@@ -1288,76 +1287,127 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners for Save/Load ---
 
-    saveConfigJsonBtn.addEventListener('click', () => {
-        const currentConfig = buildConfigurationObject();
-        const jsonString = JSON.stringify(currentConfig, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const baseFileName = (currentConfig.sopName || 'sop_config').replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        a.download = `${baseFileName}_config.json`; // Add suffix
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        alert(`Configuration saved as ${a.download}`);
-    });
-
-    saveConfigCsvBtn.addEventListener('click', () => {
-        const currentConfig = buildConfigurationObject();
-        const baseFileName = (currentConfig.sopName || 'sop_config').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    // Unified save function that creates a zip file with all formats
+    saveAllFormatsBtn.addEventListener('click', async () => {
         try {
-            // 1. SOP Details (Same)
-            createAndDownloadCsv(`${baseFileName}_sop_details.csv`, ['SOP_Name', 'SOP_Description'], [[currentConfig.sopName, currentConfig.sopDescription]]);
-            // 2. Global Factors (Updated to include descriptions)
-             createAndDownloadCsv(`${baseFileName}_global_factors.csv`, 
-                ['Factor_ID', 'Factor_Name', 'Multiplier_Range', 'Calculated_Avg_Multiplier', 'Description'], 
-                currentConfig.globalFactors.map(f => [f.id, f.name, f.multiplierRange, f.avgMultiplier, f.description || '']));
+            // Show loading message
+            const loadingMsg = document.createElement('div');
+            loadingMsg.textContent = 'Creating export files...';
+            loadingMsg.style.position = 'fixed';
+            loadingMsg.style.top = '50%';
+            loadingMsg.style.left = '50%';
+            loadingMsg.style.transform = 'translate(-50%, -50%)';
+            loadingMsg.style.padding = '15px 20px';
+            loadingMsg.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            loadingMsg.style.color = 'white';
+            loadingMsg.style.borderRadius = '5px';
+            loadingMsg.style.zIndex = '9999';
+            document.body.appendChild(loadingMsg);
 
-            // 3. Tasks CSV (Rate removed, maybe remove other method details too)
+            const currentConfig = buildConfigurationObject();
+            const baseFileName = (currentConfig.sopName || 'sop_config').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const zipFileName = `${baseFileName}_${timestamp}.zip`;
+            
+            // Create a new JSZip instance
+            const zip = new JSZip();
+            
+            // Add JSON file to zip
+            const jsonString = JSON.stringify(currentConfig, null, 2);
+            zip.file(`${baseFileName}_config.json`, jsonString);
+            
+            // Create CSV files and add to zip
+            
+            // 1. SOP Details CSV
+            const sopDetailsCsv = createCsvString(
+                ['SOP_Name', 'SOP_Description'], 
+                [[currentConfig.sopName, currentConfig.sopDescription]]
+            );
+            zip.file(`${baseFileName}_sop_details.csv`, sopDetailsCsv);
+            
+            // 2. Global Factors CSV
+            const globalFactorsCsv = createCsvString(
+                ['Factor_ID', 'Factor_Name', 'Multiplier_Range', 'Calculated_Avg_Multiplier', 'Description'],
+                currentConfig.globalFactors.map(f => [f.id, f.name, f.multiplierRange, f.avgMultiplier, f.description || ''])
+            );
+            zip.file(`${baseFileName}_global_factors.csv`, globalFactorsCsv);
+            
+            // 3. Tasks CSV
             const taskHeaders = ['Task_ID', 'Task_Name', 'Is_Selected', 'Skill_Level', 'Materials_Required', 'Factors_Affecting', 'Description'];
             const taskData = currentConfig.tasks.map(t => [t.id, t.name, t.isSelected, t.skillLevel, t.materialsRequired, t.factorsAffecting, t.description]);
-            createAndDownloadCsv(`${baseFileName}_tasks.csv`, taskHeaders, taskData);
-
-            // *** NEW: 4. Task Methods CSV ***
+            const tasksCsv = createCsvString(taskHeaders, taskData);
+            zip.file(`${baseFileName}_tasks.csv`, tasksCsv);
+            
+            // 4. Task Methods CSV
             const taskMethodsHeaders = ['Task_ID', 'Task_Name', 'Method_Name', 'Method_Rate_SFHR', 'Is_Selected_For_Calc'];
             const taskMethodsData = [];
-             currentConfig.tasks.forEach(task => {
-                 if(task.methods) {
-                      task.methods.forEach(method => {
-                           taskMethodsData.push([task.id, task.name, method.name, method.rate, method.isSelected]);
-                      });
-                 }
-             });
-             createAndDownloadCsv(`${baseFileName}_task_methods.csv`, taskMethodsHeaders, taskMethodsData);
-
-
-            // 5. Task-Factor Settings CSV (*** UPDATED WITH NEW COLUMNS ***)
+            currentConfig.tasks.forEach(task => {
+                if(task.methods) {
+                    task.methods.forEach(method => {
+                        taskMethodsData.push([task.id, task.name, method.name, method.rate, method.isSelected]);
+                    });
+                }
+            });
+            const taskMethodsCsv = createCsvString(taskMethodsHeaders, taskMethodsData);
+            zip.file(`${baseFileName}_task_methods.csv`, taskMethodsCsv);
+            
+            // 5. Task-Factor Settings CSV
             const taskFactorSettingsHeaders = [
                 'Task_ID', 'Task_Name', 'Factor_ID', 'Factor_Name',
-                'Is_Applied', 'Task_Specific_Min', 'Task_Specific_Max', 'Task_Specific_Current_Value' // Updated columns
+                'Is_Applied', 'Task_Specific_Min', 'Task_Specific_Max', 'Task_Specific_Current_Value'
             ];
             const taskFactorSettingsData = [];
             currentConfig.tasks.forEach(task => {
-                 if (currentConfig.taskFactorSettings[task.id]) {
-                     Object.keys(currentConfig.taskFactorSettings[task.id]).forEach(factorId => {
-                         const setting = currentConfig.taskFactorSettings[task.id][factorId];
-                         const factor = currentConfig.globalFactors.find(f => f.id === factorId);
-                         if (factor && setting) {
-                             taskFactorSettingsData.push([
-                                 task.id, task.name, factor.id, factor.name,
-                                 setting.applied, setting.min, setting.max, setting.currentValue // Added min/max
-                             ]);
-                         }
-                     });
-                 }
-             });
-            createAndDownloadCsv(`${baseFileName}_task_factor_settings.csv`, taskFactorSettingsHeaders, taskFactorSettingsData);
-
-            alert('Configuration details exported as multiple CSV files.');
-        } catch (error) { console.error("Error generating CSV files:", error); alert(`Failed to export CSV files: ${error.message}`); }
+                if (currentConfig.taskFactorSettings[task.id]) {
+                    Object.keys(currentConfig.taskFactorSettings[task.id]).forEach(factorId => {
+                        const setting = currentConfig.taskFactorSettings[task.id][factorId];
+                        const factor = currentConfig.globalFactors.find(f => f.id === factorId);
+                        if (factor && setting) {
+                            taskFactorSettingsData.push([
+                                task.id, task.name, factor.id, factor.name,
+                                setting.applied, setting.min, setting.max, setting.currentValue
+                            ]);
+                        }
+                    });
+                }
+            });
+            const taskFactorSettingsCsv = createCsvString(taskFactorSettingsHeaders, taskFactorSettingsData);
+            zip.file(`${baseFileName}_task_factor_settings.csv`, taskFactorSettingsCsv);
+            
+            // TODO: Add XML export when implemented
+            
+            // Generate the zip file
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            
+            // Create download link
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = zipFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Remove loading message
+            document.body.removeChild(loadingMsg);
+            
+            alert(`Configuration exported as ${zipFileName} with all formats included.`);
+        } catch (error) {
+            console.error("Error generating export files:", error);
+            alert(`Failed to export files: ${error.message}`);
+        }
     });
+    
+    // Helper function to create CSV string without downloading
+    function createCsvString(headers, dataRows) {
+        const csvHeader = headers.map(escapeCsvValue).join(',') + '\r\n';
+        const csvBody = dataRows.map(row =>
+            row.map(escapeCsvValue).join(',')
+        ).join('\r\n');
+        
+        return csvHeader + csvBody;
+    }
 
     // --- Load Logic (UPDATED to handle potentially missing new fields) ---
      loadConfigInput.addEventListener('change', (event) => {

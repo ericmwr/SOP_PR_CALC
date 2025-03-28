@@ -69,8 +69,7 @@
             <!-- Configuration Controls -->
             <div class="section save-load-controls">
                 <h2>Configuration</h2>
-                <button id="save-config-json-btn">Save Config (JSON)</button>
-                <button id="save-config-csv-btn">Save Config (CSV)</button>
+                <button id="save-all-formats-btn">Save Configuration (All Formats)</button>
                 <label for="load-config-input" class="button-label">Load Config (JSON)</label>
                 <input type="file" id="load-config-input" accept=".json" style="display: none;">
             </div>
@@ -99,6 +98,8 @@
 
     </div> <!-- End App Wrapper -->
 
+    <!-- JSZip library for creating zip files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
