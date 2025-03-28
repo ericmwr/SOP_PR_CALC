@@ -415,3 +415,285 @@ After completing each phase, update the CURRENT_PROGRESS.md file with the follow
    ```
 
 By following these steps for each phase, you'll maintain a clean repository with well-documented changes and keep the CURRENT_PROGRESS.md file up-to-date with the latest developments.
+
+## 7. Desktop Application Conversion
+
+> **⚠️ IMPORTANT: DO NOT IMPLEMENT THIS SECTION UNTIL EXPLICITLY INITIATED ⚠️**
+> 
+> This section outlines a potential future conversion to a desktop application based on the application's state as of March 2025. When desktop conversion is actually initiated, this plan MUST be reevaluated based on:
+> 1. The current state of the application at that time
+> 2. Changes in technology landscape and best practices
+> 3. Additional features and requirements that may have been added
+> 4. Current project structure and architecture
+>
+> Consider this section as conceptual guidance rather than a rigid implementation plan.
+
+### What It Is
+A conversion of the web-based SOP Calculator into a desktop application that can run locally on users' computers, with enhanced capabilities for file system access, PDF processing, and system integration.
+
+### Technical Options
+
+#### Option 1: Electron Framework (Recommended)
+- **Description**: A framework that allows building cross-platform desktop apps with web technologies
+- **Advantages**: Uses existing web code, cross-platform, full Node.js access, large community
+- **Examples**: VS Code, Slack, Discord
+
+#### Option 2: Tauri
+- **Description**: A lightweight framework using web frontend with Rust backend
+- **Advantages**: Smaller app size, better performance, uses system's WebView
+- **Consideration**: Steeper learning curve if not familiar with Rust
+
+#### Option 3: NW.js
+- **Description**: Similar to Electron but with different architecture
+- **Advantages**: Direct access to Node.js and DOM from same context
+- **Consideration**: Less actively maintained than Electron
+
+### Implementation Steps for Electron Conversion
+
+#### 7.1 Initial Setup
+1. Install prerequisites:
+   ```bash
+   npm install -g electron electron-packager
+   ```
+
+2. Create project structure:
+   ```
+   sop-calculator/
+   ├── package.json
+   ├── main.js           # Electron main process
+   └── app/
+       ├── index.html    # Existing HTML
+       ├── styles.css    # Existing CSS
+       └── script.js     # Existing JS (with modifications)
+   ```
+
+3. Create package.json:
+   ```json
+   {
+     "name": "sop-calculator",
+     "version": "1.0.0",
+     "description": "SOP Calculator for Painting Estimation",
+     "main": "main.js",
+     "scripts": {
+       "start": "electron ."
+     },
+     "dependencies": {
+       "electron": "^28.0.0"
+     }
+   }
+   ```
+
+#### 7.2 Create Main Process File
+```javascript
+// main.js
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const path = require('path');
+const fs = require('fs');
+
+function createWindow() {
+  const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+
+  win.loadFile('app/index.html');
+}
+
+app.whenReady().then(createWindow);
+
+// Handle window behavior on different platforms
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
+
+// Add IPC handlers for file operations
+ipcMain.handle('save-all-formats', async (event, config) => {
+  try {
+    // Ask user for save directory
+    const { filePath } = await dialog.showSaveDialog({
+      title: 'Save Configuration',
+      defaultPath: app.getPath('documents'),
+      buttonLabel: 'Save'
+    });
+    
+    if (!filePath) return { success: false, message: 'Save cancelled' };
+    
+    const baseDir = path.dirname(filePath);
+    const baseName = path.basename(filePath, path.extname(filePath));
+    const configDir = path.join(baseDir, baseName);
+    
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(configDir)) {
+      fs.mkdirSync(configDir, { recursive: true });
+    }
+    
+    // Save JSON
+    fs.writeFileSync(
+      path.join(configDir, `${baseName}.json`),
+      JSON.stringify(config, null, 2)
+    );
+    
+    // Save XML
+    // Implementation will depend on XML structure
+    
+    // Save CSV files
+    // Implementation will depend on CSV structure
+    
+    return { 
+      success: true, 
+      message: `Files saved to ${configDir}`,
+      path: configDir
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      message: `Error saving files: ${error.message}` 
+    };
+  }
+});
+```
+
+#### 7.3 Modify Web Code for Desktop Integration
+
+Replace browser-specific file operations with Electron IPC calls:
+
+```javascript
+// In script.js - Replace existing save functions
+
+// Add at top of file
+let isElectron = false;
+try {
+  isElectron = window.require && typeof window.require('electron') !== 'undefined';
+} catch (e) {
+  isElectron = false;
+}
+
+// Unified save function
+async function saveAllFormats() {
+  const currentConfig = buildConfigurationObject();
+  
+  if (isElectron) {
+    // Electron version - use IPC
+    const { ipcRenderer } = require('electron');
+    const result = await ipcRenderer.invoke('save-all-formats', currentConfig);
+    
+    if (result.success) {
+      alert(result.message);
+    } else {
+      alert(result.message || 'Failed to save files');
+    }
+  } else {
+    // Browser version - use JSZip
+    try {
+      const zip = new JSZip();
+      const baseFileName = (currentConfig.sopName || 'sop_config')
+        .replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      
+      // Add JSON to zip
+      zip.file(`${baseFileName}.json`, JSON.stringify(currentConfig, null, 2));
+      
+      // Add XML to zip
+      // Implementation will depend on XML structure
+      
+      // Add CSV files to zip
+      // Implementation will depend on CSV structure
+      
+      // Generate and download zip
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${baseFileName}_export.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert('Files exported as ZIP successfully');
+    } catch (error) {
+      console.error('Error creating ZIP:', error);
+      alert(`Error creating ZIP: ${error.message}`);
+    }
+  }
+}
+```
+
+#### 7.4 Package for Distribution
+
+```bash
+# For Windows
+electron-packager . SOP-Calculator --platform=win32 --arch=x64
+
+# For macOS
+electron-packager . SOP-Calculator --platform=darwin --arch=x64
+
+# For Linux
+electron-packager . SOP-Calculator --platform=linux --arch=x64
+```
+
+### Development Impact Considerations
+
+Converting to a desktop application will have these impacts:
+
+#### Initial Slowdowns
+- Setup overhead (1-2 days)
+- Learning curve for Electron concepts (2-3 days)
+- Code refactoring for Node.js APIs
+- More complex testing requirements
+
+#### Long-term Benefits
+- Direct file system access
+- Better PDF processing capabilities
+- Native system integration
+- Offline functionality
+- Enhanced security for sensitive data
+
+### Recommended Conversion Timing
+
+The optimal time to convert to a desktop application would be:
+
+1. After core SOP Calculator functionality is complete
+2. After PDF parsing and generation features are implemented
+3. Before expanding to the full project estimation system
+
+This ensures that:
+- The core data model is stable
+- The UI patterns are established
+- The application has enough value to justify desktop packaging
+- Future features can leverage desktop capabilities from the start
+
+### Required Libraries for Desktop Conversion
+
+- **Electron**: Core desktop application framework
+- **electron-packager**: For building distributable packages
+- **fs-extra**: Enhanced file system operations
+- **electron-store**: For persistent configuration storage
+- **electron-updater**: For automatic updates (optional)
+
+### Backward Compatibility Strategy
+
+To maintain compatibility with both web and desktop versions:
+
+1. Use feature detection for platform-specific code
+2. Implement fallbacks for browser-only environments
+3. Abstract file operations behind a common interface
+4. Use responsive design that works well on both platforms
+
+### Security Considerations
+
+Desktop applications require additional security considerations:
+
+1. Validate all file paths to prevent path traversal attacks
+2. Use contextIsolation when possible for renderer process
+3. Implement proper error handling for file system operations
+4. Consider code signing for distribution
+
+> **⚠️ FINAL REMINDER: This conversion plan is based on the application's state as of March 2025 and should be thoroughly reevaluated before implementation.**
