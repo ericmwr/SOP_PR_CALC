@@ -263,17 +263,32 @@ h4 { margin-top: 10px;}
 
 .global-factor-item .factor-main-inputs {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     width: 100%;
     margin-bottom: 5px;
     margin-top: 5px;
+}
+.global-factor-item .input-row {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
 }
 .global-factor-item input[type="text"] {
     margin-right: 10px;
 }
 .global-factor-item input[placeholder*="Name"] { width: 250px; }
 .global-factor-item input[placeholder*="Range"] { width: 100px; text-align: center; }
-.global-factor-item button { padding: 4px 8px; font-size: 0.8em; margin-left: 5px; }
+.global-factor-item .button-row {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.global-factor-item button { 
+    padding: 4px 8px; 
+    font-size: 0.8em; 
+    margin-right: 10px; 
+}
 .edit-factor-btn { background-color: #f0f0f0; }
 .edit-factor-btn:hover { background-color: #e0e0e0; }
 .delete-factor-btn { background-color: #fdd; }

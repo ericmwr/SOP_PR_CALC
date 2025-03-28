@@ -290,6 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const mainInputsDiv = document.createElement('div');
             mainInputsDiv.classList.add('factor-main-inputs');
             
+            // Create input row for name and range
+            const inputRowDiv = document.createElement('div');
+            inputRowDiv.classList.add('input-row');
+            
             const nameInput = document.createElement('input');
             nameInput.type = 'text';
             nameInput.value = factor.name;
@@ -301,6 +305,14 @@ document.addEventListener('DOMContentLoaded', () => {
             rangeInput.value = factor.multiplierRange;
             rangeInput.placeholder = 'Range (e.g., 0.8-1.2)';
             rangeInput.id = `factor-range-${factor.id}`;
+            
+            inputRowDiv.appendChild(nameInput);
+            inputRowDiv.appendChild(rangeInput);
+            mainInputsDiv.appendChild(inputRowDiv);
+            
+            // Create button row
+            const buttonRowDiv = document.createElement('div');
+            buttonRowDiv.classList.add('button-row');
             
             const saveBtn = document.createElement('button');
             saveBtn.textContent = 'Save';
@@ -317,11 +329,11 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.classList.add('delete-factor-btn');
             deleteBtn.addEventListener('click', () => handleDeleteFactor(factor.id));
             
-            mainInputsDiv.appendChild(nameInput);
-            mainInputsDiv.appendChild(rangeInput);
-            mainInputsDiv.appendChild(saveBtn);
-            mainInputsDiv.appendChild(cancelBtn);
-            mainInputsDiv.appendChild(deleteBtn);
+            buttonRowDiv.appendChild(saveBtn);
+            buttonRowDiv.appendChild(cancelBtn);
+            buttonRowDiv.appendChild(deleteBtn);
+            mainInputsDiv.appendChild(buttonRowDiv);
+            
             editViewDiv.appendChild(mainInputsDiv);
             
             // Create description container and textarea
